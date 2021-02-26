@@ -19,6 +19,7 @@ app.use('/api',userRouter);
 //                  {useNewUrlParser: true,
 //                      useUnifiedTopology: true});
 
-app.listen(4000,()=>{
-    console.log("localhost connected");
-})
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Our app is running on port ${ PORT }`);
+});
