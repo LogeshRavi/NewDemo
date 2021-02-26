@@ -81,9 +81,7 @@ router.post('/login',async(req,res)=>{
 
         var Userid=await User.findOne({empid:req.body.empid})
 
-        if(!Userid){
-            return res.status(400).json("id not valid")
-        }
+        
 
         
 
