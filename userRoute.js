@@ -79,6 +79,12 @@ router.post('/login',async(req,res)=>{
             return res.status(400).json("Password not valid");
         }
 
+        var Userid=await User.findOne({empid:req.body.empid})
+
+        if(!Userid){
+            return res.status(400).json("id not valid")
+        }
+
         
 
         return res.status(200).json("successfully login")
