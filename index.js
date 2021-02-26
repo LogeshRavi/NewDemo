@@ -15,9 +15,9 @@ app.use('/api',userRouter);
 
 
 
-mongoose.connect('mongodb+srv://demo:hBjdsP9rTQaau7X@cluster0.jrdfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-                 {useNewUrlParser: true,
-                     useUnifiedTopology: true});
+// mongoose.connect('mongodb+srv://demo:hBjdsP9rTQaau7X@cluster0.jrdfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+//                  {useNewUrlParser: true,
+//                      useUnifiedTopology: true});
 
 app.listen(4000,()=>{
     console.log("localhost connected");
