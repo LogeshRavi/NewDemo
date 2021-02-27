@@ -67,26 +67,31 @@ router.post('/student/register', async(req,res)=>{
 
 router.post('/login',async(req,res)=>{
     try {
-        var nameExist=  await User.findOne({name:req.body.name})
-
-        if(!nameExist){
-            return res.status(400).json("name not exist")
+    
+    if(req.body.name){
+        // console.log(req.body.name)
+        var data = await User.findOne({name: req.body.name})
+        // console.log(data)
+    }
+    else if(req.body.empid){
+        // console.log(req.body.empid)
+        var data = await User.findOne({empid: req.body.empid})
+        // console.log(data)
+    }
+    if(!data){
+        return res.status(400).json("user not found!")
+    }
+    else{
+        var validpassword = await bcrypt.compare(req.body.password,data.password);
+        // console.log(validpassword)
+        if(validpassword){
+            return res.status(200).json("successfully login")
         }
-
-        var validpassword = await bcrypt.compare(req.body.password,nameExist.password);
-
-        if(!validpassword){
-            return res.status(400).json("Password not valid");
+        else{
+            return res.status(400).json("password not valid")
         }
-
-        var Userid=await User.findOne({empid:req.body.empid})
-
-        
-
-        
-
-        return res.status(200).json("successfully login")
-
+    }
+    // console.log(data.password)
         
         
     } catch (error) {
