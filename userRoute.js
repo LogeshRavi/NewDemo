@@ -110,7 +110,8 @@ router.post('/login',async(req,res)=>{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
         // console.log(validpassword)
         if(validpassword){
-            return res.status(200).json({status:200,message:"successfully login"})
+           // return res.status(200).json({status:200,message:"successfully login"})
+           return res.json(data)
             
         }
         else{
