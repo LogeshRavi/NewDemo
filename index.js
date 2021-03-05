@@ -9,8 +9,8 @@ var bodyParser = require('body-parser')
 const formidableMiddleware = require('express-formidable');
 
 //app.use(formData.parse());
-app.use(express.json());
-//app.use(bodyParser.urlencoded({  extended: true }))
+//app.use(express.json());
+app.use(bodyParser.urlencoded({  extended: true }))
 //app.use(formidableMiddleware());
 app.use(morgan('dev'))
 
