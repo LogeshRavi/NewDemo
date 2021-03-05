@@ -104,7 +104,7 @@ router.post('/login',async(req,res)=>{
          console.log(data)
     }
     if(!data){
-        return  res.status(400).json({status:400,message:"user not found"})
+        return  res.status(400).json({status:400,message:"user not found done"})
     }
     else{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
