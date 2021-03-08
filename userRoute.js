@@ -64,7 +64,7 @@ router.post('/student/register', async(req,res)=>{
         var rollnoExist=  await User.findOne({rollno:req.body.rollno})
 
         if(rollnoExist){
-            return res.json({message:"Roll Number already exist"})
+            return res.json({status:400,message:"Roll Number already exist"})
         }
 
         
@@ -109,7 +109,7 @@ router.post('/login',async(req,res)=>{
         console.log(data)
    }
     if(!data){
-        return res.json({message:"User Not Found"})
+        return res.json({status:400,message:"User Not Found"})
     }
     else{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
@@ -120,7 +120,7 @@ router.post('/login',async(req,res)=>{
             
         }
         else{
-            return res.json({message:"Password Not Valid"})
+            return res.json({status:400,message:"Password Not Valid"})
         }
     }
     // console.log(data.password)
