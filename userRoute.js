@@ -93,11 +93,11 @@ router.post('/student/register', async(req,res)=>{
 router.post('/login',async(req,res)=>{
     try {
     
-    if(req.body.name){
-         console.log(req.body.name)
-        var data = await User.findOne({name: req.body.name})
-         console.log(data)
-    }
+    // if(req.body.name){
+    //      console.log(req.body.name)
+    //     var data = await User.findOne({name: req.body.name})
+    //      console.log(data)
+   // }
     if(req.body.name && !data){
          console.log(req.body.name)
         var data = await User.findOne({empid: req.body.name})  
