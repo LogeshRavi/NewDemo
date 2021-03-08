@@ -12,7 +12,7 @@ router.post('/teacher/register', async(req,res)=>{
         var empidExist=  await User.findOne({empid:req.body.empid})
 
         if(empidExist){
-            return res.status(400).json({status:400,message:"emp already exist"})
+            return res.json({message:"emp already exist"})
         }
         
         // var schoolExist=await User.findOne({schoolName:req.body.schoolName})
