@@ -12,7 +12,7 @@ router.post('/teacher/register', async(req,res)=>{
         var empidExist=  await User.findOne({empid:req.body.empid})
 
         if(empidExist){
-            return res.json({message:"emp already exist"})
+            return res.json({message:"Employee ID already exist"})
         }
         
         // var schoolExist=await User.findOne({schoolName:req.body.schoolName})
@@ -64,7 +64,7 @@ router.post('/student/register', async(req,res)=>{
         var rollnoExist=  await User.findOne({rollno:req.body.rollno})
 
         if(rollnoExist){
-            return res.status(400).json("student already exist")
+            return res.json({message:"Roll Number already exist"})
         }
 
         
@@ -104,7 +104,7 @@ router.post('/login',async(req,res)=>{
          console.log(data)
     }
     if(!data){
-        return  res.status(400).json({status:400,message:"user not found "})
+        return res.json({message:"User Not Found"})
     }
     else{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
@@ -115,7 +115,7 @@ router.post('/login',async(req,res)=>{
             
         }
         else{
-            return res.status(400).json({status:400,message:"password not valid"})
+            return res.json({message:"Password Not Valid"})
         }
     }
     // console.log(data.password)
