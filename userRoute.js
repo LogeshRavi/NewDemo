@@ -103,6 +103,11 @@ router.post('/login',async(req,res)=>{
         var data = await User.findOne({empid: req.body.name})  
          console.log(data)
     }
+    if(req.body.name && !data){
+        console.log(req.body.name)
+       var data = await User.findOne({rollno: req.body.name})  
+        console.log(data)
+   }
     if(!data){
         return res.json({message:"User Not Found"})
     }
