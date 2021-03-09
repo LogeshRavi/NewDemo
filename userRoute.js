@@ -99,32 +99,28 @@ router.post('/login',async(req,res)=>{
     
     
     if(req.body.name && !data){
-         //console.log(req.body.name)
         var data = await User.findOne({empid: req.body.name})  
-         //console.log(data)
     }
     if(req.body.name && !data){
-       // console.log(req.body.name)
        var data = await User.findOne({rollno: req.body.name})  
-      //  console.log(data)
    }
     if(!data){
-      //  return res.json({status:400,message:"User Not Found"})
       return res.json({StatusCode:400,StatusMessage:"Failure",Response:"User Not Found"})
     }
     else{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
-        // console.log(validpassword)
         if(validpassword){
            // return res.status(200).json({status:200,message:"successfully login"})
          //  return res.json(data)
          
            var userToken=await jwt.sign({empid:req.body.empid }||{ rollno:req.body.rollno},'secretkey')
-           res.header('auth',userToken).send(userToken)
+           res.header('auth',userToken).send({token:userToken,user:data})
            
+           
+          
         }
         else{
-           // return res.json({status:400,message:"Password Not Valid"})
+           
             return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Password Not Valid"})
         }
     }
