@@ -49,7 +49,7 @@ router.post('/teacher/register', async(req,res)=>{
             
 
         var data= await user.save();
-        res.json(data);
+        res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
       
         
     } catch (error) {
@@ -85,7 +85,8 @@ router.post('/student/register', async(req,res)=>{
             
 
         var data= await user.save();
-        res.json(data);
+        // res.json(data);
+        res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
         
     } catch (error) {
         res.status(400).json(error)
@@ -140,7 +141,7 @@ const ValidUser = (req,res,next)=>{
 router.put("/teacher/update",ValidUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async(err,update)=>{
         if(err){
-            res.sendStatus(403)
+            res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
         }
         else{
             var hash1= await bcrypt.hash(req.body.password,10)
@@ -159,7 +160,7 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
 router.put("/student/update",ValidUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async(err,update)=>{
         if(err){
-            res.sendStatus(403)
+            res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
         }
         else{
             var hash1= await bcrypt.hash(req.body.password,10)
