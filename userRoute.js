@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const User=require('./userSchema');
 const bcrypt=require('bcryptjs');
+const jwt=require('jsonwebtoken')
 
 
 
@@ -90,23 +91,21 @@ router.post('/student/register', async(req,res)=>{
     }
 })
 
+
+//login
 router.post('/login',async(req,res)=>{
     try {
     
-    // if(req.body.name){
-    //      console.log(req.body.name)
-    //     var data = await User.findOne({name: req.body.name})
-    //      console.log(data)
-   // }
+    
     if(req.body.name && !data){
-         console.log(req.body.name)
+         //console.log(req.body.name)
         var data = await User.findOne({empid: req.body.name})  
-         console.log(data)
+         //console.log(data)
     }
     if(req.body.name && !data){
-        console.log(req.body.name)
+       // console.log(req.body.name)
        var data = await User.findOne({rollno: req.body.name})  
-        console.log(data)
+      //  console.log(data)
    }
     if(!data){
         return res.json({status:400,message:"User Not Found"})
@@ -116,21 +115,66 @@ router.post('/login',async(req,res)=>{
         // console.log(validpassword)
         if(validpassword){
            // return res.status(200).json({status:200,message:"successfully login"})
-           return res.json(data)
-            
+         //  return res.json(data)
+         
+           var userToken=await jwt.sign({empid:req.body.empid }||{ rollno:req.body.rollno},'secretkey')
+           res.header('auth',userToken).send(userToken)
+           
         }
         else{
             return res.json({status:400,message:"Password Not Valid"})
         }
     }
-    // console.log(data.password)
-        
         
     } catch (error) {
         res.status(400).json(error)
     }
 })
 
+const ValidUser = (req,res,next)=>{
+    var token=req.header('auth');
+    req.token=token
+    next();
+}
+
+//teacher Update
+router.put("/teacher/update",ValidUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async(err,update)=>{
+        if(err){
+            res.sendStatus(403)
+        }
+        else{
+            var hash1= await bcrypt.hash(req.body.password,10)
+            var update=await User.updateMany({empid:req.body.empid},{$set:{
+                name:req.body.name,
+               // class:req.body.class,
+                schoolName:req.body.schoolName,
+                password:hash1
+            }})
+            return res.json({status:200,message:"Updated !!!"})
+        }
+    }) 
+})
+
+//student Update
+router.put("/student/update",ValidUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async(err,update)=>{
+        if(err){
+            res.sendStatus(403)
+        }
+        else{
+            var hash1= await bcrypt.hash(req.body.password,10)
+            var update=await User.updateMany({rollno:req.body.rollno},{$set:{
+                name:req.body.name,
+               // class:req.body.class,
+                schoolName:req.body.schoolName,
+                password:hash1
+            }})
+            
+            return res.json({status:200,message:"Updated !!!"})
+        }
+    }) 
+})
 
 
 
