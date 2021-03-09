@@ -13,7 +13,7 @@ router.post('/teacher/register', async(req,res)=>{
         var empidExist=  await User.findOne({empid:req.body.empid})
 
         if(empidExist){
-            return res.json({StatusCode:400,StatusMessage:"Failure",Responses:"Employee ID Already Exist"})
+            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Already Exist"})
         }
         
         // var schoolExist=await User.findOne({schoolName:req.body.schoolName})
@@ -66,7 +66,7 @@ router.post('/student/register', async(req,res)=>{
 
         if(rollnoExist){
           //  return res.json({status:400,message:"Roll Number already exist"})
-            return res.json({StatusCode:400,StatusMessage:"Failure",Responses:"Roll Number Already Exist"})
+            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Roll Number Already Exist"})
         }
 
         
@@ -110,7 +110,7 @@ router.post('/login',async(req,res)=>{
    }
     if(!data){
       //  return res.json({status:400,message:"User Not Found"})
-      return res.json({StatusCode:400,StatusMessage:"Failure",Responses:"User Not Found"})
+      return res.json({StatusCode:400,StatusMessage:"Failure",Response:"User Not Found"})
     }
     else{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
@@ -125,7 +125,7 @@ router.post('/login',async(req,res)=>{
         }
         else{
            // return res.json({status:400,message:"Password Not Valid"})
-            return res.json({StatusCode:400,StatusMessage:"Failure",Responses:"Password Not Valid"})
+            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Password Not Valid"})
         }
     }
         
@@ -154,7 +154,7 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
                 schoolName:req.body.schoolName,
                 password:hash1
             }})
-            return res.json({StatusCode:200,StatusMessage:"Success",Responses:"Updated !!!"})
+            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
         }
     }) 
 })
@@ -174,7 +174,7 @@ router.put("/student/update",ValidUser,async(req,res)=>{
                 password:hash1
             }})
             
-            return res.json({StatusCode:200,StatusMessage:"Success",Responses:"Updated !!!"})
+            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
         }
     }) 
 })
