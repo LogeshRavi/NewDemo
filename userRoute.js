@@ -5,7 +5,7 @@ const jwt=require('jsonwebtoken')
 
 
 
-
+//teacher register
 router.post('/teacher/register', async(req,res)=>{
     
     try {
@@ -58,7 +58,7 @@ router.post('/teacher/register', async(req,res)=>{
 })
 
 
-
+//student register
 router.post('/student/register', async(req,res)=>{
     
     try {
@@ -147,7 +147,7 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
             var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
-               // class:req.body.class,
+                class:req.body.class,
                 schoolName:req.body.schoolName,
                 password:hash1
             }})
@@ -166,7 +166,7 @@ router.put("/student/update",ValidUser,async(req,res)=>{
             var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({rollno:req.body.rollno},{$set:{
                 name:req.body.name,
-               // class:req.body.class,
+                class:req.body.class,
                 schoolName:req.body.schoolName,
                 password:hash1
             }})
