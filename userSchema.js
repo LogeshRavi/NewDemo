@@ -6,16 +6,16 @@ const UserSchema = mongoose.Schema({
         required:true,
 
     },
-    class:{
-        type:String,
-        required:true
-    },
+    // class:{
+    //     type:String,
+    //     required:true
+    // },
 
-    schoolName:{
-        type:String,
-        required:true,
+    // schoolName:{
+    //     type:String,
+    //     required:true,
 
-    },
+    // },
     rollno:{
         type:String,
         required:true,

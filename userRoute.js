@@ -37,8 +37,8 @@ router.post('/teacher/register', async(req,res)=>{
 
         const user=new User({
                        name:req.body.name,
-                       class:req.body.class,
-                       schoolName:req.body.schoolName,
+                    //    class:req.body.class,
+                    //    schoolName:req.body.schoolName,
                        empid:req.body.empid,
                      //  code:req.body.code,
                        rollno:01,
@@ -76,8 +76,8 @@ router.post('/student/register', async(req,res)=>{
 
         const user=new User({
                        name:req.body.name,
-                       class:req.body.class,
-                       schoolName:req.body.schoolName,
+                    //    class:req.body.class,
+                    //    schoolName:req.body.schoolName,
                        empid:1,
                        rollno:req.body.rollno,
                        password:hash,
@@ -147,8 +147,8 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
             var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
-                class:req.body.class,
-                schoolName:req.body.schoolName,
+                // class:req.body.class,
+                // schoolName:req.body.schoolName,
                 password:hash1
             }})
             return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
@@ -166,8 +166,8 @@ router.put("/student/update",ValidUser,async(req,res)=>{
             var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({rollno:req.body.rollno},{$set:{
                 name:req.body.name,
-                class:req.body.class,
-                schoolName:req.body.schoolName,
+                // class:req.body.class,
+                // schoolName:req.body.schoolName,
                 password:hash1
             }})
             
