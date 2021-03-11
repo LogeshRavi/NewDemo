@@ -33,7 +33,7 @@ router.post('/teacher/register', async(req,res)=>{
        
 
 
-        var hash= await bcrypt.hash(req.body.password,10)
+      //  var hash= await bcrypt.hash(req.body.password,10)
 
         const user=new User({
                        name:req.body.name,
@@ -42,7 +42,7 @@ router.post('/teacher/register', async(req,res)=>{
                        empid:req.body.empid,
                      //  code:req.body.code,
                        rollno:01,
-                       password:hash,
+                       password:req.body.password,
                    })
 
                    
@@ -65,19 +65,19 @@ router.post('/student/register', async(req,res)=>{
         var rollnoExist=  await User.findOne({rollno:req.body.rollno})
 
         if(rollnoExist){
-          //  return res.json({status:400,message:"Roll Number already exist"})
+         
             return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Roll Number Already Exist"})
         }
 
         
-        var hash= await bcrypt.hash(req.body.password,10)
+       // var hash= await bcrypt.hash(req.body.password,10)
         const user=new User({
                        name:req.body.name,
-                    //    class:req.body.class,
+                     //    class:req.body.class,
                     //    schoolName:req.body.schoolName,
                        empid:1,
                        rollno:req.body.rollno,
-                       password:hash,
+                       password:req.body.password,
                    })
             
 
@@ -106,8 +106,10 @@ router.post('/login',async(req,res)=>{
       return res.json({StatusCode:400,StatusMessage:"Failure",Response:"User Not Found"})
     }
     else{
-        var validpassword = await bcrypt.compare(req.body.password,data.password);
-        if(validpassword){
+       
+       // var validpassword = await User.compare(req.body.password,data.password);
+        
+        if(req.body.password==data.password){
           
          
            var userToken=await jwt.sign({empid:req.body.empid }||{ rollno:req.body.rollno},'secretkey')
@@ -140,12 +142,12 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
             res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
         }
         else{
-            var hash1= await bcrypt.hash(req.body.password,10)
+           // var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
                 // class:req.body.class,
                 // schoolName:req.body.schoolName,
-                password:hash1
+                password:req.body.password
             }})
             return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
         }
@@ -159,12 +161,12 @@ router.put("/student/update",ValidUser,async(req,res)=>{
             res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
         }
         else{
-            var hash1= await bcrypt.hash(req.body.password,10)
+           // var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({rollno:req.body.rollno},{$set:{
                 name:req.body.name,
                 // class:req.body.class,
                 // schoolName:req.body.schoolName,
-                password:hash1
+                password:req.body.password
             }})
             
             return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
