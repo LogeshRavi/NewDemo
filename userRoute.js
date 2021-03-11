@@ -111,13 +111,10 @@ router.post('/login',async(req,res)=>{
        // var validpassword = await User.compare(req.body.password,data.password);
         
         if(req.body.password==data.password){
-          
          
            var userToken=await jwt.sign({empid:req.body.empid }||{ rollno:req.body.rollno},'secretkey')
            res.header('auth',userToken).send({StatusCode:200,StatusMessage:"Success",Response:"Login Successfully",token:userToken,user:data})
-           
-           
-          
+        
         }
         else{
            
@@ -150,7 +147,7 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
                 // schoolName:req.body.schoolName,
                 password:req.body.password
             }})
-            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
+            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",update,empid:req.body.empid})
         }
     }) 
 })
@@ -176,19 +173,19 @@ router.put("/student/update",ValidUser,async(req,res)=>{
 })
 
 
-// router.post("/scheduleclass/kg",async(req,res)=>{
+router.post("/scheduleclass/kg",async(req,res)=>{
 
-//   const schedule=new Schedule({
-//       className:req.body.className,
-//       subject:req.body.subject,
-//       class:req.body.class,
-//       duration:req.body.duration,
-//       NoOfStudent:req.body.NoOfStudent
-//   })
-//   var data= await user.save();
-//   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",user:data})
+  const schedule=new Schedule({
+      className:req.body.className,
+      subject:req.body.subject,
+      class:req.body.class,
+      duration:req.body.duration,
+      NoOfStudents:req.body.NoOfStudents
+  })
+  var data= await schedule.save();
+  res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data})
 
-// })
+})
 
 
 
