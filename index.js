@@ -18,7 +18,7 @@ app.use(cors())
 
 app.use('/api',userRouter);
 
-mongoose.connect('mongodb+srv://demo:hBjdsP9rTQaau7X@cluster0.jrdfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://demo:E8wxFGqeJz0VkKWm@cluster0.jrdfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
                  {useNewUrlParser: true,
                      useUnifiedTopology: true});
 

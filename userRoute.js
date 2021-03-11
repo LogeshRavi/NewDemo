@@ -2,6 +2,7 @@ const router = require('express').Router();
 const User=require('./userSchema');
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken')
+const Schedule=require('./ScheduleSchema')
 
 
 
@@ -173,6 +174,21 @@ router.put("/student/update",ValidUser,async(req,res)=>{
         }
     }) 
 })
+
+
+// router.post("/scheduleclass/kg",async(req,res)=>{
+
+//   const schedule=new Schedule({
+//       className:req.body.className,
+//       subject:req.body.subject,
+//       class:req.body.class,
+//       duration:req.body.duration,
+//       NoOfStudent:req.body.NoOfStudent
+//   })
+//   var data= await user.save();
+//   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",user:data})
+
+// })
 
 
 
