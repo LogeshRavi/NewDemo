@@ -71,9 +71,6 @@ router.post('/student/register', async(req,res)=>{
 
         
         var hash= await bcrypt.hash(req.body.password,10)
-
-       
-
         const user=new User({
                        name:req.body.name,
                     //    class:req.body.class,
@@ -111,11 +108,10 @@ router.post('/login',async(req,res)=>{
     else{
         var validpassword = await bcrypt.compare(req.body.password,data.password);
         if(validpassword){
-           // return res.status(200).json({status:200,message:"successfully login"})
-         //  return res.json(data)
+          
          
            var userToken=await jwt.sign({empid:req.body.empid }||{ rollno:req.body.rollno},'secretkey')
-           res.header('auth',userToken).send({token:userToken,user:data})
+           res.header('auth',userToken).send({StatusCode:200,StatusMessage:"Success",Response:"Login Successfully",token:userToken,user:data})
            
            
           
