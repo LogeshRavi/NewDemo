@@ -139,6 +139,10 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
         if(err){
             res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
         }
+        var empidExist1=await User.findOne({empid:req.body.empid})
+        if(!empidExist1){
+            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Not Exist"})
+        }
         else{
            // var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({empid:req.body.empid},{$set:{
