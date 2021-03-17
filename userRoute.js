@@ -134,7 +134,7 @@ const ValidUser = (req,res,next)=>{
 }
 
 //teacher Update
-router.put("/teacher/update",ValidUser,async(req,res)=>{
+router.post("/teacher/update",ValidUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async(err,update)=>{
         if(err){
             res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
