@@ -149,6 +149,7 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
                 name:req.body.name,
                 // class:req.body.class,
                 // schoolName:req.body.schoolName,
+                empid:req.body.empid,
                 password:req.body.password
             }})
             return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",update,empid:req.body.empid})
