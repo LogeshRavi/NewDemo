@@ -141,7 +141,7 @@ router.put("/teacher/update",ValidUser,async(req,res)=>{
         }
         var empidExist1=await User.findOne({empid:req.body.empid})
         if(!empidExist1){
-            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Not Exist"})
+            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Not Exist",empid:req.body.empid})
         }
         else{
            // var hash1= await bcrypt.hash(req.body.password,10)
@@ -176,20 +176,53 @@ router.put("/student/update",ValidUser,async(req,res)=>{
     }) 
 })
 
-
+//new class schedule
 router.post("/scheduleclass/kg",async(req,res)=>{
+
+    var createTime = new Date();
+    var endtime = new Date();
+    endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
+    var CurrentTime=new Date()
+    if(endtime.getTime()<CurrentTime){
+        isCompleted="completed"
+    }
+    else{
+        isCompleted="live"
+    }
 
   const schedule=new Schedule({
       className:req.body.className,
       subject:req.body.subject,
       class:req.body.class,
       duration:req.body.duration,
-      NoOfStudents:req.body.NoOfStudents
+      NoOfStudents:req.body.NoOfStudents,
+      CreatedTime:createTime,
+      endTime:endtime,
+      isCompleted:isCompleted
   })
   var data= await schedule.save();
   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data})
 
-})
+}) 
+
+// complete and live status
+router.route("/isCompleted/:id").get(function(req, res) {
+    Schedule.findById(req.params.id, function(err, result) {
+      if (result) {
+        var endtime1=result.endTime
+        var CurrentTime1=new Date()
+        if(endtime1.getTime()<CurrentTime1){
+            isCompleted="Completed"
+        }
+        else{
+            isCompleted="Live"
+        }
+        return res.json({StatusCode:200,Response:isCompleted})
+      } else {
+        res.json(err);
+      }
+    });
+  });
 
 
 

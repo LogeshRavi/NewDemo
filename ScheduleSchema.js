@@ -24,7 +24,25 @@ const ScheduleSchema = mongoose.Schema({
     NoOfStudents:{
         type:String,
         required:true,
+    },
+    CreatedTime:{
+      type:Date,
+      required:true
+    },
+    // startTime: { 
+    //     type: String, 
+    //     default: Date 
+    // },
+
+    endTime:{
+        type:Date,
+        required:true
+    },
+    isCompleted:{
+        type:String,
+        required:true
     }
+
 
 
 })
