@@ -175,20 +175,58 @@ router.put("/student/update",ValidUser,async(req,res)=>{
         }
     }) 
 })
+// let timeout_scheue =()=>{
+//     try {
+//         return new Promise((resolve,reject)=>{
+
+//     var createTime = new Date();
+//     var endtime = new Date();
+//     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
+//     var CurrentTime=new Date()
+//     if(endtime.getTime()<CurrentTime){
+//         isCompleted="true"
+//     }
+//     else{
+//         isCompleted="false"
+//     }
+
+//   const schedule=new Schedule({
+//       className:req.body.className,
+//       subject:req.body.subject,
+//       class:req.body.class,
+//       duration:req.body.duration,
+//       NoOfStudents:req.body.NoOfStudents,
+//       CreatedTime:createTime,
+//       endTime:endtime,
+//       isCompleted:isCompleted
+//   })
+//         })
+//     } catch (error) {
+//         res.send(error)
+//     }
+// }
+
 
 //new class schedule
 router.post("/scheduleclass/kg",async(req,res)=>{
+
 
     var createTime = new Date();
     var endtime = new Date();
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
     if(endtime.getTime()<CurrentTime){
-        isCompleted="completed"
+        isCompleted="true"
     }
     else{
-        isCompleted="live"
+        isCompleted="false"
     }
+
+    // setTimeout(()=>{
+    //     var update= User.updateMany({className:req.body.className},{$set:{
+    //         isCompleted:"true"
+    //     }})
+    // },req.body.duration*60*1000)
 
   const schedule=new Schedule({
       className:req.body.className,
@@ -212,10 +250,10 @@ router.route("/isCompleted/:id").get(function(req, res) {
         var endtime1=result.endTime
         var CurrentTime1=new Date()
         if(endtime1.getTime()<CurrentTime1){
-            isCompleted="Completed"
+            isCompleted="COMPLETED"
         }
         else{
-            isCompleted="Live"
+            isCompleted="LIVE"
         }
         return res.json({StatusCode:200,Response:isCompleted})
       } else {
