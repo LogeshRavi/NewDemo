@@ -144,7 +144,6 @@ router.post("/teacher/update",ValidUser,async(req,res)=>{
             return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Not Exist",empid:req.body.empid})
         }
         else{
-           // var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
                 // class:req.body.class,
@@ -152,7 +151,7 @@ router.post("/teacher/update",ValidUser,async(req,res)=>{
                 empid:req.body.empid,
                 password:req.body.password
             }})
-            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",update,empid:req.body.empid})
+            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
         }
     }) 
 })
