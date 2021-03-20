@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const User=require('./userSchema');
+const User=require('./Schema/userSchema');
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken')
-const Schedule=require('./ScheduleSchema')
-
+const Schedule=require('./Schema/ScheduleSchema');
+const Assesment=require('./Schema/AssesmentSchema')
 
 
 //teacher register
@@ -45,9 +45,6 @@ router.post('/teacher/register', async(req,res)=>{
                        rollno:01,
                        password:req.body.password,
                    })
-
-                   
-            
 
         var data= await user.save();
         res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
@@ -157,7 +154,7 @@ router.post("/teacher/update",ValidUser,async(req,res)=>{
 })
 
 //student Update
-router.put("/student/update",ValidUser,async(req,res)=>{
+router.post("/student/update",ValidUser,async(req,res)=>{
     jwt.verify(req.token,'secretkey',async(err,update)=>{
         if(err){
             res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
@@ -216,21 +213,18 @@ router.post("/scheduleclass/kg",async(req,res)=>{
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
     if(endtime.getTime()<CurrentTime){
-        isCompleted="true"
+        isCompleted="Y"
     }
     else{
-        isCompleted="false"
+        isCompleted="N"
     }
 
-    // setTimeout(()=>{
-    //     var update= User.updateMany({className:req.body.className},{$set:{
-    //         isCompleted:"true"
-    //     }})
-    // },req.body.duration*60*1000)
+    
 
   const schedule=new Schedule({
       className:req.body.className,
       subject:req.body.subject,
+      GameName:req.body.GameName,
       class:req.body.class,
       duration:req.body.duration,
       NoOfStudents:req.body.NoOfStudents,
@@ -243,24 +237,138 @@ router.post("/scheduleclass/kg",async(req,res)=>{
 
 }) 
 
-// complete and live status
-router.route("/isCompleted/:id").get(function(req, res) {
-    Schedule.findById(req.params.id, function(err, result) {
-      if (result) {
-        var endtime1=result.endTime
-        var CurrentTime1=new Date()
-        if(endtime1.getTime()<CurrentTime1){
-            isCompleted="COMPLETED"
-        }
-        else{
-            isCompleted="LIVE"
-        }
-        return res.json({StatusCode:200,Response:isCompleted})
-      } else {
-        res.json(err);
+//complete and live status
+// router.route("/isCompleted/:id").get(function(req, res) {
+//     var createTime = new Date();
+//     var endtime = new Date();
+//     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
+    // var CurrentTime=new Date()
+    // console.log(endtime)
+    // if(endtime.getTime()<CurrentTime){
+        
+    //     isCompleted="Y"
+    // }
+    // else{
+    //     isCompleted="N"
+    // }
+    // Schedule.findByIdAndUpdate(  req.params.id, {$set: {
+    //         isCompleted:isCompleted
+    //     }}, 
+    //     {new: true},
+    //     function(err,user){
+    //         if(err){
+    //             res.json({error :err}) ; 
+    //         } else{
+    //             res.send(user) ; 
+    //         }
+    //     });
+    //  });
+
+
+//fetch schedule data
+router.route("/schedule/alldata").get(function(req, res) {
+    Schedule.find({}, async function(err, result) {
+
+     if (result) {
+    for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
+        var endtime = new Date();
+        endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+        var CurrentTime=new Date()
+       
+        // console.log(CurrentTime.getTime())
+        // console.log(endtime.getTime())
+        if(endtime.getTime()<CurrentTime.getTime()){
+            isCompleted="Y"
+           }
+            else{
+            isCompleted="N"
+         }
+        await Schedule.findByIdAndUpdate( id, {$set: {
+            isCompleted:isCompleted
+        }}, 
+         {new: true},
+        function(err,user){
+            if(err){
+               console.log("Error")
+            } else{
+                
+            }
+        });
+
+      }   
+       await res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
+ } else {
+        res.send(err);
       }
     });
   });
+      
+//Assesment 
+  router.post("/assesment/kg",async(req,res)=>{
+    var createTime = new Date();
+    var endtime = new Date();
+    endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
+    var CurrentTime=new Date()
+    if(endtime.getTime()<CurrentTime){
+        
+        isCompleted="Y"
+    }
+    else{
+        isCompleted="N"
+    }
+
+  const assesment=new Assesment({
+    AssessmentName:req.body.AssessmentName,
+      subject:req.body.subject,
+      GameName:req.body.GameName,
+      class:req.body.class,
+      duration:req.body.duration,
+      NoOfStudents:req.body.NoOfStudents,
+      CreatedTime:createTime,
+      endTime:endtime,
+      isCompleted:isCompleted
+  })
+  var data= await assesment.save();
+  res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",Assesment:data})
+
+}) 
+
+router.route("/assesment/alldata").get(function(req, res) {
+    Assesment.find({}, function(err, result) {
+
+      if (result) {
+    for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
+        var endtime = new Date();
+        endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+        var CurrentTime=new Date()
+        console.log(id)
+        console.log(CurrentTime.getTime())
+        console.log(endtime.getTime())
+        if(endtime.getTime()<CurrentTime.getTime()){
+            isCompleted="Y"
+           }
+            else{
+            isCompleted="N"
+         }
+         Assesment.findByIdAndUpdate( id, {$set: {
+            isCompleted:isCompleted
+        }}, 
+         {new: true},
+        function(err,user){
+            if(err){
+               console.log("Error")
+            } else{
+                
+            }
+        });
+
+      }
+      res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
+    } else {
+           res.send(err);
+         }
+       });
+     });
 
 
 

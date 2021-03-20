@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
-const ScheduleSchema = mongoose.Schema({
-    className:{
+const AssesmentSchema = mongoose.Schema({
+    AssessmentName:{
         type:String,
         required:true,
     },
@@ -29,10 +29,6 @@ const ScheduleSchema = mongoose.Schema({
       type:Date,
       required:true
     },
-    // startTime: { 
-    //     type: String, 
-    //     default: Date 
-    // },
 
     endTime:{
         type:Date,
@@ -41,10 +37,14 @@ const ScheduleSchema = mongoose.Schema({
     isCompleted:{
         type:String,
         required:true
-    }
-
+    },
+    GameName: [{
+        type: String, 
+        required: false, 
+        trim: true
+    }],
 
 
 })
 
-module.exports=mongoose.model('Schedule',ScheduleSchema)
+module.exports=mongoose.model('Assesment',AssesmentSchema)
