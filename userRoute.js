@@ -4,6 +4,9 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken')
 const Schedule=require('./Schema/ScheduleSchema');
 const Assesment=require('./Schema/AssesmentSchema')
+const Students=require('./Schema/StudentsSchema');
+const { query } = require('express');
+const Gamelist=require('./Schema/GameSchema')
 
 
 //teacher register
@@ -38,7 +41,7 @@ router.post('/teacher/register', async(req,res)=>{
 
         const user=new User({
                        name:req.body.name,
-                    //    class:req.body.class,
+                        class:req.body.class,
                     //    schoolName:req.body.schoolName,
                        empid:req.body.empid,
                      //  code:req.body.code,
@@ -67,11 +70,28 @@ router.post('/student/register', async(req,res)=>{
             return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Roll Number Already Exist"})
         }
 
+    //  if(req.body.class=="LKG_A"){
+    //      var lkg_A= new Students({
+    //         name:req.body.name
+    //      })
+    //      var data1=await lkg_A.save()
+    //      console.log(data1)
+    //  }
+   
+    
+            var student=new Students({
+                name:req.body.name,
+                class:req.body.class,
+            })
+             var data=await student.save()
+            
+        
+
         
        // var hash= await bcrypt.hash(req.body.password,10)
         const user=new User({
                        name:req.body.name,
-                     //    class:req.body.class,
+                       class:req.body.class,
                     //    schoolName:req.body.schoolName,
                        empid:1,
                        rollno:req.body.rollno,
@@ -219,7 +239,18 @@ router.post("/scheduleclass/kg",async(req,res)=>{
         isCompleted="N"
     }
 
+    // var StudentsList=Students.find({}, async function(err, result) {
+
+    //     if (result) {
+           
+    //     }
+    // })
+   // var query ={"class":"LKG_A"}
+    const cursor = Students.find({"class":"LKG_A"},(function(err, results){
+        console.log(results);
+    }) );
     
+
 
   const schedule=new Schedule({
       className:req.body.className,
@@ -370,7 +401,24 @@ router.route("/assesment/alldata").get(function(req, res) {
        });
      });
 
+ //get student name
+     router.route("/classstudent").post(function(req, res) {
+        
+        const cursor = Students.find({"class":req.body.class},(function(err, results){
+               res.json(results)
+        }) );
+     })
 
+     //GET GAME
+  router.route("/gameselection").post(function(req, res) {
+      
+        const cursor = Gamelist.find({subjectName:req.body.subjectName},(function(err, results){
+              res.json(results)
+        }) );
+     })
 
-
+// router.route("/gameselection").post(function(req, res) {
+//             const cursor = Gamelist.find({Name:req.body.Name})
+//             console.log(cursor)
+// })
 module.exports=router;
