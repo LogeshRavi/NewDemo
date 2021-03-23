@@ -298,7 +298,7 @@ router.post("/scheduleclass/kg",async(req,res)=>{
 
 //fetch schedule data
 router.route("/schedule/alldata").get(function(req, res) {
-    Schedule.find({}, async function(err, result) {
+    Schedule.find({},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
     for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
@@ -365,8 +365,7 @@ router.route("/schedule/alldata").get(function(req, res) {
 }) 
 
 router.route("/assesment/alldata").get(function(req, res) {
-    Assesment.find({}, function(err, result) {
-
+    Assesment.find({},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
       if (result) {
     for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         var endtime = new Date();
@@ -405,6 +404,7 @@ router.route("/assesment/alldata").get(function(req, res) {
      router.route("/classstudent").post(function(req, res) {
         
         const cursor = Students.find({"class":req.body.class},(function(err, results){
+            
                res.json(results)
         }) );
      })
