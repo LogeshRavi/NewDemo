@@ -44,6 +44,11 @@ const AssesmentSchema = mongoose.Schema({
         trim: true
     }],
 
+    StudentsList:[{
+        type:String,
+        required:true,
+        trime:true
+    }]
 
 })
 

@@ -43,7 +43,11 @@ const ScheduleSchema = mongoose.Schema({
         required: false, 
         trim: true
     }],
-
+    StudentsList:[{
+        type:String,
+        required:true,
+        trime:true
+    }]
 
 })
 

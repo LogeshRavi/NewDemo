@@ -11,11 +11,11 @@ const UserSchema = mongoose.Schema({
         required:true
     },
 
-    // schoolName:{
-    //     type:String,
-    //     required:true,
+    schoolName:{
+        type:String,
+        required:true,
 
-    // },
+    },
     rollno:{
         type:String,
         required:true,

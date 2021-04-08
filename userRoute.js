@@ -5,7 +5,6 @@ const jwt=require('jsonwebtoken')
 const Schedule=require('./Schema/ScheduleSchema');
 const Assesment=require('./Schema/AssesmentSchema')
 const Students=require('./Schema/StudentsSchema');
-const { query } = require('express');
 const Gamelist=require('./Schema/GameSchema')
 
 
@@ -42,7 +41,7 @@ router.post('/teacher/register', async(req,res)=>{
         const user=new User({
                        name:req.body.name,
                         class:req.body.class,
-                    //    schoolName:req.body.schoolName,
+                       schoolName:req.body.schoolName,
                        empid:req.body.empid,
                      //  code:req.body.code,
                        rollno:01,
@@ -70,35 +69,21 @@ router.post('/student/register', async(req,res)=>{
             return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Roll Number Already Exist"})
         }
 
-    //  if(req.body.class=="LKG_A"){
-    //      var lkg_A= new Students({
-    //         name:req.body.name
-    //      })
-    //      var data1=await lkg_A.save()
-    //      console.log(data1)
-    //  }
-   
-    
             var student=new Students({
                 name:req.body.name,
                 class:req.body.class,
             })
              var data=await student.save()
-            
-        
-
-        
+           
        // var hash= await bcrypt.hash(req.body.password,10)
         const user=new User({
                        name:req.body.name,
                        class:req.body.class,
-                    //    schoolName:req.body.schoolName,
+                        schoolName:req.body.schoolName,
                        empid:1,
                        rollno:req.body.rollno,
                        password:req.body.password,
                    })
-            
-
         var data= await user.save();
         // res.json(data);
         res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
@@ -108,12 +93,9 @@ router.post('/student/register', async(req,res)=>{
     }
 })
 
-
 //login
 router.post('/login',async(req,res)=>{
     try {
-    
-    
     if(req.body.name && !data){
         var data = await User.findOne({empid: req.body.name})  
     }
@@ -129,7 +111,7 @@ router.post('/login',async(req,res)=>{
         
         if(req.body.password==data.password){
          
-           var userToken=await jwt.sign({empid:req.body.empid }||{ rollno:req.body.rollno},'secretkey')
+           var userToken=await jwt.sign({empid:data.empid}||{ rollno:data.rollno},'secretkey')
            res.header('auth',userToken).send({StatusCode:200,StatusMessage:"Success",Response:"Login Successfully",token:userToken,user:data})
         
         }
@@ -192,42 +174,10 @@ router.post("/student/update",ValidUser,async(req,res)=>{
         }
     }) 
 })
-// let timeout_scheue =()=>{
-//     try {
-//         return new Promise((resolve,reject)=>{
-
-//     var createTime = new Date();
-//     var endtime = new Date();
-//     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
-//     var CurrentTime=new Date()
-//     if(endtime.getTime()<CurrentTime){
-//         isCompleted="true"
-//     }
-//     else{
-//         isCompleted="false"
-//     }
-
-//   const schedule=new Schedule({
-//       className:req.body.className,
-//       subject:req.body.subject,
-//       class:req.body.class,
-//       duration:req.body.duration,
-//       NoOfStudents:req.body.NoOfStudents,
-//       CreatedTime:createTime,
-//       endTime:endtime,
-//       isCompleted:isCompleted
-//   })
-//         })
-//     } catch (error) {
-//         res.send(error)
-//     }
-// }
 
 
 //new class schedule
 router.post("/scheduleclass/kg",async(req,res)=>{
-
-
     var createTime = new Date();
     var endtime = new Date();
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
@@ -238,20 +188,6 @@ router.post("/scheduleclass/kg",async(req,res)=>{
     else{
         isCompleted="N"
     }
-
-    // var StudentsList=Students.find({}, async function(err, result) {
-
-    //     if (result) {
-           
-    //     }
-    // })
-   // var query ={"class":"LKG_A"}
-    const cursor = Students.find({"class":"LKG_A"},(function(err, results){
-        console.log(results);
-    }) );
-    
-
-
   const schedule=new Schedule({
       className:req.body.className,
       subject:req.body.subject,
@@ -259,6 +195,7 @@ router.post("/scheduleclass/kg",async(req,res)=>{
       class:req.body.class,
       duration:req.body.duration,
       NoOfStudents:req.body.NoOfStudents,
+      StudentsList:req.body.StudentsList,
       CreatedTime:createTime,
       endTime:endtime,
       isCompleted:isCompleted
@@ -268,46 +205,19 @@ router.post("/scheduleclass/kg",async(req,res)=>{
 
 }) 
 
-//complete and live status
-// router.route("/isCompleted/:id").get(function(req, res) {
-//     var createTime = new Date();
-//     var endtime = new Date();
-//     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
-    // var CurrentTime=new Date()
-    // console.log(endtime)
-    // if(endtime.getTime()<CurrentTime){
-        
-    //     isCompleted="Y"
-    // }
-    // else{
-    //     isCompleted="N"
-    // }
-    // Schedule.findByIdAndUpdate(  req.params.id, {$set: {
-    //         isCompleted:isCompleted
-    //     }}, 
-    //     {new: true},
-    //     function(err,user){
-    //         if(err){
-    //             res.json({error :err}) ; 
-    //         } else{
-    //             res.send(user) ; 
-    //         }
-    //     });
-    //  });
 
 
 //fetch schedule data
 router.route("/schedule/alldata").get(function(req, res) {
+    let page=1;
+    let limit=4;
     Schedule.find({},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
-    for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
+    for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         var endtime = new Date();
-        endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+      await  endtime.setTime(Ct.getTime() + (d * 60 * 1000));
         var CurrentTime=new Date()
-       
-        // console.log(CurrentTime.getTime())
-        // console.log(endtime.getTime())
         if(endtime.getTime()<CurrentTime.getTime()){
             isCompleted="Y"
            }
@@ -321,11 +231,9 @@ router.route("/schedule/alldata").get(function(req, res) {
         function(err,user){
             if(err){
                console.log("Error")
-            } else{
-                
+            } else{         
             }
         });
-
       }   
        await res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
  } else {
@@ -341,12 +249,15 @@ router.route("/schedule/alldata").get(function(req, res) {
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
     if(endtime.getTime()<CurrentTime){
-        
         isCompleted="Y"
     }
     else{
         isCompleted="N"
     }
+
+    const noofstudents=req.body.StudentsList.length
+  
+    
 
   const assesment=new Assesment({
     AssessmentName:req.body.AssessmentName,
@@ -354,16 +265,21 @@ router.route("/schedule/alldata").get(function(req, res) {
       GameName:req.body.GameName,
       class:req.body.class,
       duration:req.body.duration,
-      NoOfStudents:req.body.NoOfStudents,
+      NoOfStudents:noofstudents,
+      StudentsList:req.body.StudentsList,
       CreatedTime:createTime,
       endTime:endtime,
       isCompleted:isCompleted
   })
+
+ 
+
   var data= await assesment.save();
   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",Assesment:data})
 
 }) 
 
+//get assesment data
 router.route("/assesment/alldata").get(function(req, res) {
     Assesment.find({},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
       if (result) {
@@ -391,7 +307,6 @@ router.route("/assesment/alldata").get(function(req, res) {
                 
             }
         });
-
       }
       res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
     } else {
@@ -402,23 +317,25 @@ router.route("/assesment/alldata").get(function(req, res) {
 
  //get student name
      router.route("/classstudent").post(function(req, res) {
-        
-        const cursor = Students.find({"class":req.body.class},(function(err, results){
-            
+        const cursor = Students.find({"class":req.body.class},(function(err, results){    
                res.json(results)
         }) );
      })
 
      //GET GAME
-  router.route("/gameselection").post(function(req, res) {
-      
+       router.route("/gameselection").post(function(req, res) {
         const cursor = Gamelist.find({subjectName:req.body.subjectName},(function(err, results){
               res.json(results)
         }) );
      })
 
-// router.route("/gameselection").post(function(req, res) {
-//             const cursor = Gamelist.find({Name:req.body.Name})
-//             console.log(cursor)
-// })
+       
+
+     
+
+
+    
+
+
+
 module.exports=router;
