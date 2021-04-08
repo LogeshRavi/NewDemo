@@ -188,13 +188,15 @@ router.post("/scheduleclass/kg",async(req,res)=>{
     else{
         isCompleted="N"
     }
+
+    const noofstudents=req.body.StudentsList.length
   const schedule=new Schedule({
       className:req.body.className,
       subject:req.body.subject,
       GameName:req.body.GameName,
       class:req.body.class,
       duration:req.body.duration,
-      NoOfStudents:req.body.NoOfStudents,
+      NoOfStudents:noofstudents,
       StudentsList:req.body.StudentsList,
       CreatedTime:createTime,
       endTime:endtime,
