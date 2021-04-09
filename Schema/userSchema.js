@@ -6,10 +6,10 @@ const UserSchema = mongoose.Schema({
         required:true,
 
     },
-    class:{
+    class:[{
         type:String,
         required:true
-    },
+    }],
 
     schoolName:{
         type:String,

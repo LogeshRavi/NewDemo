@@ -84,6 +84,9 @@ router.post('/student/register', async(req,res)=>{
                        rollno:req.body.rollno,
                        password:req.body.password,
                    })
+
+       
+
         var data= await user.save();
         // res.json(data);
         res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
@@ -111,7 +114,7 @@ router.post('/login',async(req,res)=>{
         
         if(req.body.password==data.password){
          
-           var userToken=await jwt.sign({empid:data.empid}||{ rollno:data.rollno},'secretkey')
+           var userToken=await jwt.sign({_id:data.id}||{ _id:data.id},'secretkey')
            res.header('auth',userToken).send({StatusCode:200,StatusMessage:"Success",Response:"Login Successfully",token:userToken,user:data})
         
         }
@@ -128,9 +131,37 @@ router.post('/login',async(req,res)=>{
 
 const ValidUser = (req,res,next)=>{
     var token=req.header('auth');
-    req.token=token
-    next();
+
+    jwt.verify(token,'secretkey',(err,payload)=>{
+        if(err){
+
+        }
+      //  console.log(payload)
+        const id=payload
+            User.findById(id).then(data=>{
+                req.user=data
+                next()
+            })
+    })
 }
+
+// const authorization = req.headers
+
+// if(!authorization){
+//     return res.status(401).json({error:"you must login"})
+// }
+
+// const token=authorization.replace("Bearer ","")
+// jwt.verify(token,'secretkey',(err,payload)=>{
+//     if(err){
+
+//     }
+//     const id=payload
+//     User.findById(id).then(userdata=>{
+//         req.user=userdata
+//         next()
+//     })
+// })
 
 //teacher Update
 router.post("/teacher/update",ValidUser,async(req,res)=>{
@@ -177,7 +208,9 @@ router.post("/student/update",ValidUser,async(req,res)=>{
 
 
 //new class schedule
-router.post("/scheduleclass/kg",async(req,res)=>{
+router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
+    
+
     var createTime = new Date();
     var endtime = new Date();
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
@@ -200,12 +233,14 @@ router.post("/scheduleclass/kg",async(req,res)=>{
       StudentsList:req.body.StudentsList,
       CreatedTime:createTime,
       endTime:endtime,
-      isCompleted:isCompleted
+      isCompleted:isCompleted,
+      CreatedBy:req.user.name
   })
   var data= await schedule.save();
   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data})
-
+    
 }) 
+
 
 
 
@@ -245,7 +280,13 @@ router.route("/schedule/alldata").get(function(req, res) {
   });
       
 //Assesment 
-  router.post("/assesment/kg",async(req,res)=>{
+  router.post("/assesment/kg",ValidUser,async(req,res)=>{
+    jwt.verify(req.token,'secretkey',async(err,update)=>{
+        if(err){
+            res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
+        }
+        else{      
+
     var createTime = new Date();
     var endtime = new Date();
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
@@ -259,7 +300,6 @@ router.route("/schedule/alldata").get(function(req, res) {
 
     const noofstudents=req.body.StudentsList.length
   
-    
 
   const assesment=new Assesment({
     AssessmentName:req.body.AssessmentName,
@@ -278,8 +318,9 @@ router.route("/schedule/alldata").get(function(req, res) {
 
   var data= await assesment.save();
   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",Assesment:data})
-
+        }
 }) 
+  })
 
 //get assesment data
 router.route("/assesment/alldata").get(function(req, res) {
@@ -329,6 +370,20 @@ router.route("/assesment/alldata").get(function(req, res) {
         const cursor = Gamelist.find({subjectName:req.body.subjectName},(function(err, results){
               res.json(results)
         }) );
+     })
+
+
+     //delete student details
+     router.route("/deleteStudents").delete(function(req,res){
+         var id=req.query.id;
+         const data=Students.findByIdAndDelete(id,function(err,results){
+             res.json(results)
+         })
+     })
+
+     router.post('/createpost',ValidUser,(req,res)=>{
+         console.log(req.user.name)
+         res.send("ok")
      })
 
        

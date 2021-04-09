@@ -46,8 +46,14 @@ const ScheduleSchema = mongoose.Schema({
     StudentsList:[{
         type:String,
         required:true,
-        trime:true
-    }]
+        trim:true
+    }],
+    CreatedBy:{
+        type:String,
+        required:true,
+        trim:true
+    }
+
 
 })
 
