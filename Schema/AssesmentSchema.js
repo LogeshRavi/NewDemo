@@ -48,7 +48,12 @@ const AssesmentSchema = mongoose.Schema({
         type:String,
         required:true,
         trime:true
-    }]
+    }],
+    CreatedBy:{
+        type:String,
+        required:true,
+        trim:true
+    }
 
 })
 

@@ -145,23 +145,6 @@ const ValidUser = (req,res,next)=>{
     })
 }
 
-// const authorization = req.headers
-
-// if(!authorization){
-//     return res.status(401).json({error:"you must login"})
-// }
-
-// const token=authorization.replace("Bearer ","")
-// jwt.verify(token,'secretkey',(err,payload)=>{
-//     if(err){
-
-//     }
-//     const id=payload
-//     User.findById(id).then(userdata=>{
-//         req.user=userdata
-//         next()
-//     })
-// })
 
 //teacher Update
 router.post("/teacher/update",ValidUser,async(req,res)=>{
@@ -281,11 +264,7 @@ router.route("/schedule/alldata").get(function(req, res) {
       
 //Assesment 
   router.post("/assesment/kg",ValidUser,async(req,res)=>{
-    jwt.verify(req.token,'secretkey',async(err,update)=>{
-        if(err){
-            res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
-        }
-        else{      
+      
 
     var createTime = new Date();
     var endtime = new Date();
@@ -311,15 +290,15 @@ router.route("/schedule/alldata").get(function(req, res) {
       StudentsList:req.body.StudentsList,
       CreatedTime:createTime,
       endTime:endtime,
-      isCompleted:isCompleted
+      isCompleted:isCompleted,
+      CreatedBy:req.user.name
   })
 
  
 
   var data= await assesment.save();
   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",Assesment:data})
-        }
-}) 
+   
   })
 
 //get assesment data
@@ -381,10 +360,30 @@ router.route("/assesment/alldata").get(function(req, res) {
          })
      })
 
-     router.post('/createpost',ValidUser,(req,res)=>{
-         console.log(req.user.name)
-         res.send("ok")
+     
+     //Get Student Class
+     router.get("/getStudentClass",ValidUser,async(req,res)=>{
+        const user=req.user.name
+        console.log(user)
+        const Class=Schedule.find({ StudentsList:user },function(req,results) {
+            console.log(results)
+            res.json(results)     
+        }
+    )
      })
+
+     //get Student Class
+     router.get("/getStudentAssessment",ValidUser,async(req,res)=>{
+        const user=req.user.name
+        console.log(user)
+        const Class=Assesment.find({ StudentsList:user },function(req,results) {
+            console.log(results)
+            res.json(results)     
+        }
+    )
+     })
+
+
 
        
 
