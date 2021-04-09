@@ -6,6 +6,7 @@ const Schedule=require('./Schema/ScheduleSchema');
 const Assesment=require('./Schema/AssesmentSchema')
 const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
+const Teacher=require('./Schema/TeacherSchema')
 
 
 //teacher register
@@ -38,9 +39,16 @@ router.post('/teacher/register', async(req,res)=>{
 
       //  var hash= await bcrypt.hash(req.body.password,10)
 
+      var teacher=new Teacher({
+        name:req.body.name,
+        class:req.body.class,
+        empid:req.body.empid
+    })
+     var data=await teacher.save()
+
         const user=new User({
                        name:req.body.name,
-                        class:req.body.class,
+                       class:req.body.class,
                        schoolName:req.body.schoolName,
                        empid:req.body.empid,
                      //  code:req.body.code,
@@ -205,6 +213,8 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
         isCompleted="N"
     }
 
+   
+
     const noofstudents=req.body.StudentsList.length
   const schedule=new Schedule({
       className:req.body.className,
@@ -219,8 +229,13 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
       isCompleted:isCompleted,
       CreatedBy:req.user.name
   })
-  var data= await schedule.save();
-  res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data})
+
+
+
+var data= await schedule.save();
+    res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data})
+  
+  
     
 }) 
 
@@ -382,6 +397,12 @@ router.route("/assesment/alldata").get(function(req, res) {
         }
     )
      })
+
+    router.get("/getTeacherClass",ValidUser,async(req,res)=>{
+        const ClassName=req.user.class
+        res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",ClassName:ClassName})
+    })
+
 
 
 
