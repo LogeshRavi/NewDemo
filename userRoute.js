@@ -232,10 +232,10 @@ var data= await schedule.save();
 //fetch schedule data
 //router.route("").get(function(req, res) {
     router.get("/schedule/alldata",ValidUser,async(req,res)=>{
-        const userid =req.user.id
+        const username =req.user.name
     let page=1;
     let limit=4;
-    Schedule.find({userid}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+    Schedule.find({CreatedBy:username}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
     for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
