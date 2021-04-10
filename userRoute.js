@@ -230,10 +230,12 @@ var data= await schedule.save();
 
 
 //fetch schedule data
-router.route("/schedule/alldata").get(function(req, res) {
+//router.route("").get(function(req, res) {
+    router.get("/schedule/alldata",ValidUser,async(req,res)=>{
+        const userid =req.user.id
     let page=1;
     let limit=4;
-    Schedule.find({},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+    Schedule.find({userid}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
     for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
