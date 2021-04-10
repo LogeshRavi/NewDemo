@@ -80,6 +80,7 @@ router.post('/student/register', async(req,res)=>{
             var student=new Students({
                 name:req.body.name,
                 class:req.body.class,
+                rollno:req.body.rollno
             })
              var data=await student.save()
            
@@ -269,6 +270,8 @@ var data= await schedule.save();
       
 //Assesment 
   router.post("/assesment/kg",ValidUser,async(req,res)=>{
+    var createTime = new Date();
+    var endtime = new Date();
     
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
