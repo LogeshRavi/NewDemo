@@ -171,11 +171,7 @@ router.post("/teacher/update",ValidUser,async(req,res)=>{
 
 //student Update
 router.post("/student/update",ValidUser,async(req,res)=>{
-    jwt.verify(req.token,'secretkey',async(err,update)=>{
-        if(err){
-            res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
-        }
-        else{
+    
            // var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({rollno:req.body.rollno},{$set:{
                 name:req.body.name,
@@ -185,8 +181,7 @@ router.post("/student/update",ValidUser,async(req,res)=>{
             }})
             
             return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
-        }
-    }) 
+       
 })
 
 
