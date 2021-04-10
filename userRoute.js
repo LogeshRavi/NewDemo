@@ -156,15 +156,8 @@ const ValidUser = (req,res,next)=>{
 
 //teacher Update
 router.post("/teacher/update",ValidUser,async(req,res)=>{
-    jwt.verify(req.token,'secretkey',async(err,update)=>{
-        if(err){
-            res.json({StatusCode:403,StatusMessage:"Failure",Response:"Token Error"})
-        }
-        var empidExist1=await User.findOne({empid:req.body.empid})
-        if(!empidExist1){
-            return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Not Exist",empid:req.body.empid})
-        }
-        else{
+   
+      
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
                 // class:req.body.class,
@@ -173,8 +166,7 @@ router.post("/teacher/update",ValidUser,async(req,res)=>{
                 password:req.body.password
             }})
             return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
-        }
-    }) 
+      
 })
 
 //student Update

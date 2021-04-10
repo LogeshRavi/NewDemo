@@ -11,7 +11,6 @@ const StudentsSchema = mongoose.Schema({
         required: true,
     }
 
-
 })
 
 module.exports=mongoose.model('Students',StudentsSchema)
