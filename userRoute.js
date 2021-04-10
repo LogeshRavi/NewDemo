@@ -233,9 +233,10 @@ var data= await schedule.save();
 //router.route("").get(function(req, res) {
     router.get("/schedule/alldata",ValidUser,async(req,res)=>{
         const username =req.user.name
+        console.log(username)
     let page=1;
     let limit=4;
-    Schedule.find({CreatedBy:username}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+    Schedule.find({},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
     for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
