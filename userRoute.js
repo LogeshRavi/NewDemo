@@ -236,7 +236,7 @@ var data= await schedule.save();
         console.log(username)
     let page=1;
     let limit=4;
-    Schedule.find({},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+    Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
     for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
@@ -269,10 +269,7 @@ var data= await schedule.save();
       
 //Assesment 
   router.post("/assesment/kg",ValidUser,async(req,res)=>{
-      
-
-    var createTime = new Date();
-    var endtime = new Date();
+    
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
     if(endtime.getTime()<CurrentTime){
@@ -307,8 +304,10 @@ var data= await schedule.save();
   })
 
 //get assesment data
-router.route("/assesment/alldata").get(function(req, res) {
-    Assesment.find({},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
+//router.route("/assesment/alldata").get(function(req, res) {
+    router.get("/assesment/alldata",ValidUser,async(req,res)=>{
+        const username =req.user.name
+    Assesment.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
       if (result) {
     for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         var endtime = new Date();
