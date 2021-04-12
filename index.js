@@ -6,7 +6,7 @@ const morgan = require('morgan')
 const cors=require('cors')
 const formData = require('express-form-data')
 var bodyParser = require('body-parser')
-const formidableMiddleware = require('express-formidable');
+const Reports=require('./Reports')
 
 //app.use(formData.parse());
 //app.use(express.json());
@@ -17,6 +17,7 @@ app.use(morgan('dev'))
 app.use(cors())
 
 app.use('/api',userRouter);
+app.use('/api',Reports);
 
 mongoose.connect('mongodb+srv://demo:E8wxFGqeJz0VkKWm@cluster0.jrdfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
                  {useNewUrlParser: true,

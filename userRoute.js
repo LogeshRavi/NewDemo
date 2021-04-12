@@ -6,20 +6,17 @@ const Schedule=require('./Schema/ScheduleSchema');
 const Assesment=require('./Schema/AssesmentSchema')
 const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
-const Teacher=require('./Schema/TeacherSchema')
+const Teacher=require('./Schema/TeacherSchema');
+const { duration } = require('moment');
 
 
 //teacher register
 router.post('/teacher/register', async(req,res)=>{
-    
     try {
-        
         var empidExist=  await User.findOne({empid:req.body.empid})
-
         if(empidExist){
             return res.json({StatusCode:400,StatusMessage:"Failure",Response:"Employee ID Already Exist"})
         }
-        
         // var schoolExist=await User.findOne({schoolName:req.body.schoolName})
 
         // if(schoolExist){
@@ -157,31 +154,54 @@ const ValidUser = (req,res,next)=>{
 
 //teacher Update
 router.post("/teacher/update",ValidUser,async(req,res)=>{
-   
+    const eid=req.user.id
+    
       
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
-                // class:req.body.class,
-                // schoolName:req.body.schoolName,
+                 class:req.body.class,
+                 schoolName:req.body.schoolName,
                 empid:req.body.empid,
                 password:req.body.password
             }})
-            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
+            //return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",User:update})
       
+            var result= await User.findById(eid,function (req,rest) {
+               
+                return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",User:rest})
+            })
+            
 })
 
 //student Update
 router.post("/student/update",ValidUser,async(req,res)=>{
+    const eid=req.user.id
     
            // var hash1= await bcrypt.hash(req.body.password,10)
             var update=await User.updateMany({rollno:req.body.rollno},{$set:{
                 name:req.body.name,
-                // class:req.body.class,
-                // schoolName:req.body.schoolName,
+                 class:req.body.class,
+                 schoolName:req.body.schoolName,
+                 rollno:req.body.rollno,
                 password:req.body.password
             }})
-            
-            return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!"})
+
+            var update=await Students.updateMany({rollno:req.body.rollno},{$set:{
+                name:req.body.name,
+                 class:req.body.class,
+                 rollno:req.body.rollno,
+                
+            }})
+
+
+
+
+
+            var result= await User.findById(eid,function (req,rest) {
+               
+                return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",User:rest})
+            })
+         
        
 })
 
@@ -215,6 +235,7 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
       CreatedTime:createTime,
       endTime:endtime,
       isCompleted:isCompleted,
+      RemainingTime:req.body.duration,
       CreatedBy:req.user.name
   })
 
@@ -235,23 +256,32 @@ var data= await schedule.save();
     router.get("/schedule/alldata",ValidUser,async(req,res)=>{
         const username =req.user.name
         console.log(username)
-    let page=1;
-    let limit=4;
     Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
      if (result) {
-    for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
+    for  (var {id: id,  CreatedTime: Ct,duration:d,RemainingTime,Rt} of result) {
         var endtime = new Date();
       await  endtime.setTime(Ct.getTime() + (d * 60 * 1000));
         var CurrentTime=new Date()
+        
         if(endtime.getTime()<CurrentTime.getTime()){
             isCompleted="Y"
            }
             else{
             isCompleted="N"
          }
+         if(isCompleted=="N"){
+             Rt= endtime.getTime()-CurrentTime.getTime()
+             
+           // console.log(remainingTime)
+        }else{
+            Rt=0
+            
+        }
+         
         await Schedule.findByIdAndUpdate( id, {$set: {
-            isCompleted:isCompleted
+            isCompleted:isCompleted,
+            RemainingTime:Rt/60000
         }}, 
          {new: true},
         function(err,user){
@@ -261,6 +291,7 @@ var data= await schedule.save();
             }
         });
       }   
+     
        await res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
  } else {
         res.send(err);
@@ -394,6 +425,8 @@ var data= await schedule.save();
         const ClassName=req.user.class
         res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",ClassName:ClassName})
     })
+
+    
 
 
 

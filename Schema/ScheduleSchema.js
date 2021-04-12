@@ -52,6 +52,9 @@ const ScheduleSchema = mongoose.Schema({
         type:String,
         required:true,
         trim:true
+    },
+    RemainingTime:{
+        type:String,
     }
 
 
