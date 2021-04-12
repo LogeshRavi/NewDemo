@@ -221,8 +221,6 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
         isCompleted="N"
     }
 
-   
-
     const noofstudents=req.body.StudentsList.length
   const schedule=new Schedule({
       className:req.body.className,
@@ -252,14 +250,14 @@ var data= await schedule.save();
 
 
 //fetch schedule data
-//router.route("").get(function(req, res) {
+
     router.get("/schedule/alldata",ValidUser,async(req,res)=>{
         const username =req.user.name
-        console.log(username)
     Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
+       
      if (result) {
-    for  (var {id: id,  CreatedTime: Ct,duration:d,RemainingTime,Rt} of result) {
+    for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         var endtime = new Date();
       await  endtime.setTime(Ct.getTime() + (d * 60 * 1000));
         var CurrentTime=new Date()
@@ -272,27 +270,34 @@ var data= await schedule.save();
          }
          if(isCompleted=="N"){
              Rt= endtime.getTime()-CurrentTime.getTime()
-             
-           // console.log(remainingTime)
         }else{
-            Rt=0
-            
+            Rt=0     
         }
-         
+            
         await Schedule.findByIdAndUpdate( id, {$set: {
             isCompleted:isCompleted,
             RemainingTime:Rt/60000
-        }}, 
+        }}), 
          {new: true},
+         
         function(err,user){
             if(err){
                console.log("Error")
-            } else{         
+            } else{ 
+
             }
-        });
+        };
+      
       }   
+
+             const data=  Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+                res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
+         })
+
      
-       await res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
+     
+
+     
  } else {
         res.send(err);
       }
