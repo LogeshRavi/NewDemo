@@ -331,8 +331,9 @@ var data= await schedule.save();
       endTime:endtime,
       isCompleted:isCompleted,
       CreatedBy:req.user.name,
+      empid:req.user.empid,
       RemainingTime:req.body.duration,
-      empid:req.user.empid
+      
   })
 
  
@@ -346,7 +347,7 @@ var data= await schedule.save();
 //router.route("/assesment/alldata").get(function(req, res) {
     router.get("/assesment/alldata",ValidUser,async(req,res)=>{
         const username =req.user.empid
-    Assesment.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
+    Assesment.find({empid:username},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
       if (result) {
     for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         var endtime = new Date();
@@ -380,7 +381,7 @@ var data= await schedule.save();
             }
         });
       }
-      const data=  Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+      const data=  Schedule.find({empid:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
         res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
  })
     } else {
