@@ -295,9 +295,6 @@ var data= await schedule.save();
          })
 
      
-     
-
-     
  } else {
         res.send(err);
       }
@@ -373,7 +370,9 @@ var data= await schedule.save();
             }
         });
       }
-      res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:result});
+      const data=  Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+        res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
+ })
     } else {
            res.send(err);
          }
@@ -405,18 +404,18 @@ var data= await schedule.save();
 
      
      //Get Student Class
-     router.get("/getStudentClass",ValidUser,async(req,res)=>{
+     router.get("/getStudentClass1",ValidUser,async(req,res)=>{
         const user=req.user.name
         console.log(user)
         const Class=Schedule.find({ StudentsList:user },function(req,results) {
-            console.log(results)
+            console.log(results) 
             res.json(results)     
         }
     )
      })
 
      //get Student Class
-     router.get("/getStudentAssessment",ValidUser,async(req,res)=>{
+     router.get("/getStudentAssessment1",ValidUser,async(req,res)=>{
         const user=req.user.name
         console.log(user)
         const Class=Assesment.find({ StudentsList:user },function(req,results) {
@@ -430,6 +429,107 @@ var data= await schedule.save();
         const ClassName=req.user.class
         res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",ClassName:ClassName})
     })
+
+
+    router.get("/getStudentClass",ValidUser,async(req,res)=>{
+        const username =req.user.name
+        console.log(username)
+    Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+       console.log(result)
+       
+     if (result) {
+    for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
+        var endtime = new Date();
+      await  endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+        var CurrentTime=new Date()
+        
+        if(endtime.getTime()<CurrentTime.getTime()){
+            isCompleted="Y"
+           }
+            else{
+            isCompleted="N"
+         }
+         if(isCompleted=="N"){
+             Rt= endtime.getTime()-CurrentTime.getTime()
+        }else{
+            Rt=0     
+        }
+            
+        await Schedule.findByIdAndUpdate( id, {$set: {
+            isCompleted:isCompleted,
+            RemainingTime:Rt/60000
+        }}), 
+         {new: true},
+         
+        function(err,user){
+            if(err){
+               console.log("Error")
+            } else{ 
+
+            }
+        };
+      
+      }   
+
+             const data=  Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+                res.send({StatusCode:200,StatusMessage:"Successhh",Schedule_Class:results});
+         })
+
+     
+ } else {
+        res.send(err);
+      }
+    });
+  });
+
+
+  router.get("/getStudentAssessment",ValidUser,async(req,res)=>{
+    const username =req.user.name
+    console.log(username)
+Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+   console.log(result)
+   
+ if (result) {
+for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
+    var endtime = new Date();
+  await  endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+    var CurrentTime=new Date()
+    
+    if(endtime.getTime()<CurrentTime.getTime()){
+        isCompleted="Y"
+       }
+        else{
+        isCompleted="N"
+     }
+     if(isCompleted=="N"){
+         Rt= endtime.getTime()-CurrentTime.getTime()
+    }else{
+        Rt=0     
+    }
+        
+    await Schedule.findByIdAndUpdate( id, {$set: {
+        isCompleted:isCompleted,
+        RemainingTime:Rt/60000
+    }}), 
+     {new: true},
+     
+    function(err,user){
+        if(err){
+           console.log("Error")
+        } else{ 
+        }
+    };
+  }   
+         const data=  Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+            res.send({StatusCode:200,StatusMessage:"Successhh",Schedule_Class:results});
+     })
+
+} else {
+    res.send(err);
+  }
+});
+});
+      
 
     
 
