@@ -12,6 +12,10 @@ const SchoolSchema = mongoose.Schema({
     }],
     expiryDate:{
         type:Date,
+    },
+    RemainingTime:{
+        type:String,
+        
     }
 
 })

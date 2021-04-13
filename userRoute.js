@@ -7,7 +7,7 @@ const Assesment=require('./Schema/AssesmentSchema')
 const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
 const Teacher=require('./Schema/TeacherSchema');
-const { duration } = require('moment');
+
 
 
 //teacher register
@@ -193,10 +193,6 @@ router.post("/student/update",ValidUser,async(req,res)=>{
                 
             }})
 
-
-
-
-
             var result= await User.findById(eid,function (req,rest) {
                
                 return res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",User:rest})
@@ -238,12 +234,9 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
       empid:req.user.empid
   })
 
-
-
 var data= await schedule.save();
     res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data})
-  
-  
+ 
     
 }) 
 
@@ -347,7 +340,7 @@ var data= await schedule.save();
 //router.route("/assesment/alldata").get(function(req, res) {
     router.get("/assesment/alldata",ValidUser,async(req,res)=>{
         const username =req.user.empid
-    Assesment.find({empid:username},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
+    Assesment.find({empid:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
       if (result) {
     for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         var endtime = new Date();
@@ -368,7 +361,7 @@ var data= await schedule.save();
        }else{
            Rt=0     
        }
-         Assesment.findByIdAndUpdate( id, {$set: {
+        await  Assesment.findByIdAndUpdate( id, {$set: {
             isCompleted:isCompleted,
             RemainingTime:Rt
         }}, 
@@ -481,7 +474,6 @@ var data= await schedule.save();
         };
       
       }   
-
              const data=  Schedule.find({studentRollNoList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
                 res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
          })
