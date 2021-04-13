@@ -234,7 +234,8 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
       endTime:endtime,
       isCompleted:isCompleted,
       RemainingTime:req.body.duration,
-      CreatedBy:req.user.name
+      CreatedBy:req.user.name,
+      empid:req.user.empid
   })
 
 
@@ -518,7 +519,7 @@ for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         
     await Schedule.findByIdAndUpdate( id, {$set: {
         isCompleted:isCompleted,
-        RemainingTime:Rt/60000
+        RemainingTime:Rt
     }}), 
      {new: true},
      

@@ -55,6 +55,9 @@ const ScheduleSchema = mongoose.Schema({
     },
     RemainingTime:{
         type:String,
+    },
+    empid:{
+        type:String
     }
 
 
