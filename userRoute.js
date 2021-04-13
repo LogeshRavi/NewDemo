@@ -253,7 +253,7 @@ var data= await schedule.save();
 //fetch schedule data
 
     router.get("/schedule/alldata",ValidUser,async(req,res)=>{
-        const username =req.user.name
+        const username =req.user.empid
     Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
        
@@ -441,7 +441,7 @@ var data= await schedule.save();
 
 
     router.get("/getStudentClass",ValidUser,async(req,res)=>{
-        const username =req.user.name
+        const username =req.user.rollno
         console.log(username)
     Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
        console.log(result)
