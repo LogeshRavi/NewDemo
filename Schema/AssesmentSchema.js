@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const AssesmentSchema = mongoose.Schema({
-    AssessmentName:{
+    topicName:{
         type:String,
         required:true,
     },
@@ -44,7 +44,7 @@ const AssesmentSchema = mongoose.Schema({
         trim: true
     }],
 
-    StudentsList:[{
+    studentRollNoList:[{
         type:String,
         required:true,
         trime:true

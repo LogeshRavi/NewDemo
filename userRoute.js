@@ -223,7 +223,7 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
 
     const noofstudents=req.body.studentRollNoList.length
   const schedule=new Schedule({
-      topicName:req.body.className,
+      topicName:req.body.topicName,
       subject:req.body.subject,
       GameName:req.body.GameName,
       class:req.body.class,
@@ -320,7 +320,7 @@ var data= await schedule.save();
   
 
   const assesment=new Assesment({
-      topicName:req.body.AssessmentName,
+      topicName:req.body.topicName,
       subject:req.body.subject,
       GameName:req.body.GameName,
       class:req.body.class,
