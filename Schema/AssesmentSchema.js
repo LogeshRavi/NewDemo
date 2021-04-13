@@ -56,6 +56,9 @@ const AssesmentSchema = mongoose.Schema({
     },
     RemainingTime:{
         type:String,
+    },
+    empid:{
+        type:String
     }
 
 })

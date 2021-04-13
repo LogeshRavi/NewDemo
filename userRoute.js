@@ -331,7 +331,8 @@ var data= await schedule.save();
       endTime:endtime,
       isCompleted:isCompleted,
       CreatedBy:req.user.name,
-      RemainingTime:req.body.duration
+      RemainingTime:req.body.duration,
+      empid:req.user.empid
   })
 
  
@@ -344,7 +345,7 @@ var data= await schedule.save();
 //get assesment data
 //router.route("/assesment/alldata").get(function(req, res) {
     router.get("/assesment/alldata",ValidUser,async(req,res)=>{
-        const username =req.user.name
+        const username =req.user.empid
     Assesment.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, function(err, result) {
       if (result) {
     for (var {id: id,  CreatedTime: Ct,duration:d} of result) {
@@ -481,7 +482,7 @@ var data= await schedule.save();
       }   
 
              const data=  Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
-                res.send({StatusCode:200,StatusMessage:"Successhh",Schedule_Class:results});
+                res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
          })
 
      
@@ -493,7 +494,7 @@ var data= await schedule.save();
 
 
   router.get("/getStudentAssessment",ValidUser,async(req,res)=>{
-    const username =req.user.name
+    const username =req.user.rollno
     console.log(username)
 Assesment.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
    console.log(result)
@@ -517,7 +518,7 @@ for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         Rt=0     
     }
         
-    await Schedule.findByIdAndUpdate( id, {$set: {
+    await Assesment.findByIdAndUpdate( id, {$set: {
         isCompleted:isCompleted,
         RemainingTime:Rt
     }}), 
@@ -531,7 +532,7 @@ for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
     };
   }   
          const data=  Assesment.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
-            res.send({StatusCode:200,StatusMessage:"Successhh",Schedule_Class:results});
+            res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
      })
 
 } else {
