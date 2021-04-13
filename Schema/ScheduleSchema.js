@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const ScheduleSchema = mongoose.Schema({
-    className:{
+    topicName:{
         type:String,
         required:true,
     },
@@ -43,7 +43,7 @@ const ScheduleSchema = mongoose.Schema({
         required: false, 
         trim: true
     }],
-    StudentsList:[{
+    studentRollNoList:[{
         type:String,
         required:true,
         trim:true

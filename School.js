@@ -2,9 +2,12 @@ const Schools=require('./Schema/SchoolSchema');
 const router = require('./userRoute');
 
 
-router.get("/assesment/alldata",async(req,res)=>{
+router.get("/findSchool",async(req,res)=>{
 
-
+    Schools.find({},function (req,result) {
+        res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",Schools:result})
+    })
+ 
     
 
 

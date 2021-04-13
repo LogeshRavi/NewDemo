@@ -221,15 +221,15 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
         isCompleted="N"
     }
 
-    const noofstudents=req.body.StudentsList.length
+    const noofstudents=req.body.studentRollNoList.length
   const schedule=new Schedule({
-      className:req.body.className,
+      topicName:req.body.className,
       subject:req.body.subject,
       GameName:req.body.GameName,
       class:req.body.class,
       duration:req.body.duration,
       NoOfStudents:noofstudents,
-      StudentsList:req.body.StudentsList,
+      studentRollNoList:req.body.studentRollNoList,
       CreatedTime:createTime,
       endTime:endtime,
       isCompleted:isCompleted,
@@ -316,17 +316,17 @@ var data= await schedule.save();
         isCompleted="N"
     }
 
-    const noofstudents=req.body.StudentsList.length
+    const noofstudents=req.body.studentRollNoList.length
   
 
   const assesment=new Assesment({
-    AssessmentName:req.body.AssessmentName,
+      topicName:req.body.AssessmentName,
       subject:req.body.subject,
       GameName:req.body.GameName,
       class:req.body.class,
       duration:req.body.duration,
       NoOfStudents:noofstudents,
-      StudentsList:req.body.StudentsList,
+      studentRollNoList:req.body.studentRollNoList,
       CreatedTime:createTime,
       endTime:endtime,
       isCompleted:isCompleted,
@@ -445,7 +445,7 @@ var data= await schedule.save();
     router.get("/getStudentClass",ValidUser,async(req,res)=>{
         const username =req.user.rollno
         console.log(username)
-    Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+    Schedule.find({studentRollNoList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
        console.log(result)
        
      if (result) {
@@ -482,7 +482,7 @@ var data= await schedule.save();
       
       }   
 
-             const data=  Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+             const data=  Schedule.find({studentRollNoList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
                 res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
          })
 
@@ -497,7 +497,7 @@ var data= await schedule.save();
   router.get("/getStudentAssessment",ValidUser,async(req,res)=>{
     const username =req.user.rollno
     console.log(username)
-Assesment.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+Assesment.find({studentRollNoList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
    console.log(result)
    
  if (result) {
@@ -532,7 +532,7 @@ for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         }
     };
   }   
-         const data=  Assesment.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+         const data=  Assesment.find({studentRollNoList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
             res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
      })
 

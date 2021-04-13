@@ -10,19 +10,19 @@ const ReportSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    // gameReport:[{
-    //     gameName:[{ type:String,required:true}],
-    //     correctAns:[{type:String,required:true}],
-    //     wrongAns:[{type:String,required:true}],
-    //     timeTaken:[{type:String,required:true}]
-    // }]
-
     gameReport:[{
-            gameName:String,
-            correctAns:String,
-            wrongAns:String,
-            timeTaken:String
-        }]
+        gameName:[{ type:String,required:true}],
+        correctAns:[{type:String,required:true}],
+        wrongAns:[{type:String,required:true}],
+        timeTaken:[{type:String,required:true}]
+    }]
+
+    // gameReport:[{
+    //     //     gameName:String,
+    //     //     correctAns:String,
+    //     //     wrongAns:String,
+    //     //     timeTaken:String
+    //     // }]
 
 
 
