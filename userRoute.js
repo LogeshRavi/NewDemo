@@ -254,7 +254,7 @@ var data= await schedule.save();
 
     router.get("/schedule/alldata",ValidUser,async(req,res)=>{
         const username =req.user.empid
-    Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+    Schedule.find({empid:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
 
        
      if (result) {
@@ -291,7 +291,7 @@ var data= await schedule.save();
       
       }   
 
-             const data=  Schedule.find({CreatedBy:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+             const data=  Schedule.find({empid:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
                 res.send({StatusCode:200,StatusMessage:"Success",Schedule_Class:results});
          })
 
