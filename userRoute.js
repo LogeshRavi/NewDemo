@@ -276,7 +276,7 @@ var data= await schedule.save();
             
         await Schedule.findByIdAndUpdate( id, {$set: {
             isCompleted:isCompleted,
-            RemainingTime:Rt/60000
+            RemainingTime:Rt
         }}), 
          {new: true},
          
@@ -329,7 +329,8 @@ var data= await schedule.save();
       CreatedTime:createTime,
       endTime:endtime,
       isCompleted:isCompleted,
-      CreatedBy:req.user.name
+      CreatedBy:req.user.name,
+      RemainingTime:req.body.duration
   })
 
  
@@ -358,8 +359,15 @@ var data= await schedule.save();
             else{
             isCompleted="N"
          }
+
+         if(isCompleted=="N"){
+            Rt= endtime.getTime()-CurrentTime.getTime()
+       }else{
+           Rt=0     
+       }
          Assesment.findByIdAndUpdate( id, {$set: {
-            isCompleted:isCompleted
+            isCompleted:isCompleted,
+            RemainingTime:Rt
         }}, 
          {new: true},
         function(err,user){
@@ -486,13 +494,14 @@ var data= await schedule.save();
   router.get("/getStudentAssessment",ValidUser,async(req,res)=>{
     const username =req.user.name
     console.log(username)
-Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
+Assesment.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } }, async function(err, result) {
    console.log(result)
    
  if (result) {
 for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
     var endtime = new Date();
   await  endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+
     var CurrentTime=new Date()
     
     if(endtime.getTime()<CurrentTime.getTime()){
@@ -520,7 +529,7 @@ for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
         }
     };
   }   
-         const data=  Schedule.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
+         const data=  Assesment.find({StudentsList:username},{}, { sort: { 'CreatedTime' : -1 } },function (req,results) {
             res.send({StatusCode:200,StatusMessage:"Successhh",Schedule_Class:results});
      })
 
