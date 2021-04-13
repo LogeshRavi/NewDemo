@@ -49,7 +49,7 @@ router.get("/splash1",async(req,res)=>{
 })
 
 
-router.get("/splash1",async(req,res)=>{
+router.get("/splash",async(req,res)=>{
     
     Schools.find({}, async function (req,result) {
   if (result) {
