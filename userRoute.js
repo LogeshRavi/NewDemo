@@ -7,6 +7,7 @@ const Assesment=require('./Schema/AssesmentSchema')
 const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
 const Teacher=require('./Schema/TeacherSchema');
+const StudentsData=require('./Schema/StudentsData')
 
 
 
@@ -37,11 +38,12 @@ router.post('/teacher/register', async(req,res)=>{
       //  var hash= await bcrypt.hash(req.body.password,10)
 
       var teacher=new Teacher({
-        name:req.body.name,
-        class:req.body.class,
-        empid:req.body.empid
+        // name:req.body.name,
+        // class:req.body.class,
+        username:req.body.empid,
+        password:req.body.password
     })
-     var data=await teacher.save()
+     var data1=await teacher.save()
 
         const user=new User({
                        name:req.body.name,
@@ -54,7 +56,7 @@ router.post('/teacher/register', async(req,res)=>{
                    })
 
         var data= await user.save();
-        res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
+        res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data1})
       
         
     } catch (error) {
@@ -80,6 +82,14 @@ router.post('/student/register', async(req,res)=>{
                 rollno:req.body.rollno
             })
              var data=await student.save()
+
+             var student=new StudentsData({
+                username:req.body.rollno,
+                password:req.body.password
+
+            })
+             var data1=await student.save()
+
            
        // var hash= await bcrypt.hash(req.body.password,10)
         const user=new User({
@@ -95,7 +105,7 @@ router.post('/student/register', async(req,res)=>{
 
         var data= await user.save();
         // res.json(data);
-        res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data})
+        res.json({StatusCode:200,StatusMessage:"Success",Response:"Register Successfully",user:data1})
         
     } catch (error) {
         res.status(400).json(error)
@@ -328,8 +338,6 @@ var data= await schedule.save();
       RemainingTime:req.body.duration,
       
   })
-
- 
 
   var data= await assesment.save();
   res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",Assesment:data})

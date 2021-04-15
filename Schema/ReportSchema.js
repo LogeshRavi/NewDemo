@@ -17,12 +17,7 @@ const ReportSchema = mongoose.Schema({
         timeTaken:[{type:String,required:true}]
     }]
 
-    // gameReport:[{
-    //     //     gameName:String,
-    //     //     correctAns:String,
-    //     //     wrongAns:String,
-    //     //     timeTaken:String
-    //     // }]
+    
 
 
 
