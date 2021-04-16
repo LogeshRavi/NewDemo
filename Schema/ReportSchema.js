@@ -1,27 +1,44 @@
 const mongoose = require('mongoose')
 
-const ReportSchema = mongoose.Schema({
-
-    // class: {
-    //     type: String,
-    //     required: true,
-    // },
-    rollno:{
-        type:String,
+const asc =    mongoose.Schema({
+    GameName: {
+        type: String,
         required:true
     },
-    gameReport:[{
-        gameName:[{ type:String,required:true}],
-        correctAns:[{type:String,required:true}],
-        wrongAns:[{type:String,required:true}],
-        timeTaken:[{type:String,required:true}]
-    }]
+    Question:{
+      type: String,
+      required:true
+    },
+  CrtAns:{
+      type: Number,
+      required:true
+  },
+  userAns:{
+    type: Number,
+    required:true
+},
 
+})
+const Author= mongoose.model('Author', asc);
+
+  const Book = mongoose.model('Book', 
+  new mongoose.Schema({
+      name: {
+          type: String,
+          required:true
+      },
+      description:{
+        type: String,
+        required:true
+    },
+    author:[asc]
+   
+  })
+  );
     
 
 
 
 
-})
 
-module.exports=mongoose.model('Reports',ReportSchema)
+//module.exports=mongoose.model('Reports',ReportSchema)
