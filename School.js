@@ -78,7 +78,7 @@ router.get("/splash",async(req,res)=>{
         })
     }
     Schools.find({},function (req,results) {
-        console.log(results)
+        
         res.send({StatusCode:200,StatusMessage:"Success",Data:results})
     })
            

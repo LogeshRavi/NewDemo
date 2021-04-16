@@ -164,7 +164,7 @@ const ValidUser = (req,res,next)=>{
 
 //teacher Update
 router.post("/teacher/update",ValidUser,async(req,res)=>{
-    const eid=req.user.id
+    
     
       
             var update=await User.updateMany({empid:req.body.empid},{$set:{
