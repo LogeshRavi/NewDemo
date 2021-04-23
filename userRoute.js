@@ -256,6 +256,7 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
       studentRollNoList:req.body.studentRollNoList,
       CreatedTime:createTime,
       endTime:endtime,
+      Date:today,
       isCompleted:isCompleted,
       RemainingTime:req.body.duration,
       CreatedBy:req.user.name,
