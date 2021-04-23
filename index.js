@@ -10,7 +10,7 @@ const Reports=require('./Reports')
 const Schools=require('./School')
 
 //app.use(formData.parse());
-//app.use(express.json());
+app.use(express.json());
 app.use(bodyParser.urlencoded({  extended: true }))
 //app.use(formidableMiddleware());
 app.use(morgan('dev'))

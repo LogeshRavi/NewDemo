@@ -58,6 +58,9 @@ const ScheduleSchema = mongoose.Schema({
     },
     empid:{
         type:String
+    },
+    Date:{
+        type:String
     }
 
 

@@ -5,106 +5,99 @@ const Assesment=require('./Schema/AssesmentSchema')
 const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
 const Teacher=require('./Schema/TeacherSchema')
-const Dummy=require('./Schema/dummySchema')
-// const {Reports}=require('./Schema/ReportSchema')
-// const {Book} = require('./Schema/ReportSchema')
-
-const mongoose = require('mongoose')
+//const Dummy=require('./Schema/dummySchema')
+const Reports=require('./Schema/ReportsSchema')
 
 
-const asc =    mongoose.Schema({
-    GameName: {
-        type: String,
-        required:true
-    },
-    Question:{
-      type: String,
-      required:true
-    },
-  CrtAns:{
-      type: Number,
-      required:true
-  },
-  userAns:{
-    type: Number,
-    required:true
-},
 
-})
-const Author= mongoose.model('Author', asc);
-
-  const Book = mongoose.model('book', 
-  new mongoose.Schema({
-      userId: {
-          type: String,
-          required:true
-      },
-      Rollno:{
-        type: String,
-        required:true
-    },
-    author:[asc]
-   
-  })
-  );
-    
-
-
-router.post("/classwise/report",async(req,res)=>{
-
-    async function createReport(Rollno ,userId , author) {
-        const book = Book({
-            Rollno ,userId, author
-        })
-        const result = await book.save();
-        console.log(result);
-        res.json({StatusCode:200,StatusMessage:"Success",Response:"Updated !!!",User:result})
-    }
-
-    createReport('01' ,'677777' , 
-[new Author({GameName: 'Fahad Taha',
-Question:'Python developer',CrtAns:23, userAns:23}),
-{GameName: 'Fahad Taha',
-Question:'Python developer',CrtAns:23, userAns:23},
-{GameName: 'Fahad Taha',
-Question:'Python developer',CrtAns:23, userAns:23},
-]
-    )
-
-})
 
 router.post("/classwise/report1",async(req,res)=>{
 
-    const data=new Dummy({
-        Rollno:req.body.Rollno,
-        ClassId:req.body.ClassId,
-        Sub:[{
-            GameName:req.body.GameName,
-            Reports:[{
-                Question:req.body.Question,
-                CrtAns:req.body.CrtAns,
-                userAns:req.body.userAns
-            }]
-        }]
-    })
+   
+   const result=req.body.Sub[0].Result
+   console.log(result)
+    
+   var total=0
+   for (var j = 0; j <3; j++){
+    //console.log(j)
+    console.log(req.body.Sub[j].Result);
+    var bool=await req.body.Sub[j].Result
+    if(bool=='True'){
+        console.log(total)
+        total=total+1
+    }
+    
+    
+    }
 
+// var Total1=0;
+//     console.log(result1)
+    // for (var val of Result[0]){
+    //     console.log(val)
+    
+//     if(val=='True'){
+//         Total1=Total1+1
+//         console.log(Total1)
+//     }
+//     }
+
+//const data;
+    var data4=[]
+for (var j = 0; j <3; j++){
+
+  var  obj={
+
+        
+        Question:req.body.Sub[j].Question,
+        CrtAns:req.body.Sub[j].CrtAns,
+        userAns:req.body.Sub[j].userAns,
+        Result:req.body.Sub[j].Result
+    }
+    data4[j]=obj
+
+    
+    
+
+}
+console.log(data4)
+
+
+   const  data= await new Reports({
+        
+         rollno:req.body.rollno,
+         AssesmentId:req.body.AssesmentId,
+         GameName:req.body.GameName,
+        Sub:
+            data4
+        ,
+
+
+            Total:total
+        
+    })
+    console.log(data)
+
+    
+
+ 
+    
     var data1= await data.save();
-    res.json({StatusCode:200,StatusMessage:"Success",Response:"Schedule Successfully",schedule:data1})
+
+    res.json({StatusCode:200,StatusMessage:"Success",Response:"Report Add Successfully",schedule:data1})
 
 })
 
 
+// router.post("/classwise/report",async(req,res)=>{
+
+//     const cursor = Dummy.find({$and:[{Rollno:req.body.Rollno }, {ClassId:req.body.ClassId}]},(function(err, results){   
+//         console.log(results) 
+//         res.json(results)
+//  }) );
 
 
 
-
-
-
-
-
-
-
-
+// })
 
 
 module.exports=router;

@@ -59,6 +59,9 @@ const AssesmentSchema = mongoose.Schema({
     },
     empid:{
         type:String
+    },
+    Date:{
+        type:String
     }
 
 })

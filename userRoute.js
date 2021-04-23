@@ -8,7 +8,8 @@ const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
 const Teacher=require('./Schema/TeacherSchema');
 const StudentsData=require('./Schema/StudentsData')
-
+const School=require('./Schema/SchoolSchema')
+const Reports=require('./Schema/ReportsSchema')
 
 
 //teacher register
@@ -121,9 +122,15 @@ router.post('/login',async(req,res)=>{
     if(req.body.name && !data){
        var data = await User.findOne({rollno: req.body.name})  
    }
+
+   console.log(data)
+
+   
     if(!data){
       return res.json({StatusCode:400,StatusMessage:"Failure",Response:"User Not Found"})
     }
+
+
     else{
        
        // var validpassword = await User.compare(req.body.password,data.password);
@@ -169,8 +176,8 @@ router.post("/teacher/update",ValidUser,async(req,res)=>{
       
             var update=await User.updateMany({empid:req.body.empid},{$set:{
                 name:req.body.name,
-                 class:req.body.class,
-                 schoolName:req.body.schoolName,
+                class:req.body.class,
+                schoolName:req.body.schoolName,
                 empid:req.body.empid,
                 password:req.body.password
             }})
@@ -218,6 +225,17 @@ router.post("/scheduleclass/kg",ValidUser,async(req,res)=>{
 
     var createTime = new Date();
     var endtime = new Date();
+
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    
+    var time = new Date();
+
+    today = dd + '-' + mm + '-' + yyyy + ',' + time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    console.log(today)
+
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
     if(endtime.getTime()<CurrentTime){
@@ -310,6 +328,16 @@ var data= await schedule.save();
     var createTime = new Date();
     var endtime = new Date();
     
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    
+    var time = new Date();
+
+    today = dd + '-' + mm + '-' + yyyy + ',' + time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    console.log(today)
+    
     endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
     var CurrentTime=new Date()
     if(endtime.getTime()<CurrentTime){
@@ -332,6 +360,7 @@ var data= await schedule.save();
       studentRollNoList:req.body.studentRollNoList,
       CreatedTime:createTime,
       endTime:endtime,
+      Date:today,
       isCompleted:isCompleted,
       CreatedBy:req.user.name,
       empid:req.user.empid,
@@ -543,7 +572,30 @@ for  (var {id: id,  CreatedTime: Ct,duration:d} of result) {
 });
       
 
-    
+//student reports
+router.post("/studentwise/report",ValidUser,async(req,res)=>{
+    const rollno1=req.user.rollno
+    const cursor = Reports.find({$and:[{rollno:rollno1 }, {AssesmentId:req.body.AssesmentId}]},(function(err, results){   
+        console.log(results) 
+        res.json(results)
+ }) );
+})
+
+
+//report for teachers
+router.post("/studentwise/report1",ValidUser,async(req,res)=>{
+
+    const rollno1=req.body.rollno
+    const cursor = Reports.find({$and:[{rollno:rollno1 }, {AssesmentId:req.body.AssesmentId}]},(function(err, results){   
+        console.log(results) 
+        res.json(results)
+ }) );
+
+
+
+})
+
+
 
 
 
