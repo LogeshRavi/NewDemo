@@ -26,8 +26,7 @@ router.post("/classwise/report1",async(req,res)=>{
         console.log(total)
         total=total+1
     }
-    
-    
+  
     }
 
 // var Total1=0;
@@ -50,20 +49,18 @@ for (var j = 0; j <3; j++){
         
         Question:req.body.Sub[j].Question,
         CrtAns:req.body.Sub[j].CrtAns,
-        userAns:req.body.Sub[j].userAns,
+        UserAns:req.body.Sub[j].UserAns,
         Result:req.body.Sub[j].Result
     }
     data4[j]=obj
-
-    
-    
 
 }
 console.log(data4)
 
 
    const  data= await new Reports({
-        
+         name:req.body.name,
+         class:req.body.class,
          rollno:req.body.rollno,
          AssesmentId:req.body.AssesmentId,
          GameName:req.body.GameName,

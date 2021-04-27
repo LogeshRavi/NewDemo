@@ -1,7 +1,14 @@
 const mongoose = require('mongoose')
 
 const ReportsSchema = ({
-
+  name: {
+    type: String,
+    required:true
+ },
+  class: {
+    type: String,
+    required:true
+ },
     rollno: {
     type: String,
     required:true
@@ -14,6 +21,7 @@ GameName: {
   type: String,
   
 },
+
  
 Sub:[{
  
@@ -25,7 +33,7 @@ Sub:[{
       type: Number,
      
     },
-    userAns:{
+    UserAns:{
     type: Number,
     
     },
@@ -43,6 +51,9 @@ Sub:[{
 Total:{
   type: Number,
  
+  },
+  Avg:{
+    type: Number,
   }
 
         

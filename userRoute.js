@@ -585,21 +585,116 @@ router.post("/studentwise/report",ValidUser,async(req,res)=>{
 
 //report for teachers
 router.post("/studentwise/report1",ValidUser,async(req,res)=>{
+    var page = parseInt(req.query.page)||0 ; //for next page pass 1 here
+    var limit = parseInt(req.query.limit) ||0;
+    if(limit==0){
+        return res.json({msg:"format error"})
+    }
 
     const rollno1=req.body.rollno
-    const cursor = Reports.find({$and:[{rollno:rollno1 }, {AssesmentId:req.body.AssesmentId}]},(function(err, results){   
-        console.log(results) 
-        res.json(results)
- }) );
+    const cursor = Reports.find({$and:[{rollno:rollno1 }, {AssesmentId:req.body.AssesmentId}]}).skip(page * limit) //Notice here
+    .limit(limit)
+    .exec((err, doc) => {
+      if (err) {
+        return res.json(err);
+      };
+      Reports.countDocuments({$and:[{rollno:rollno1 }, {AssesmentId:req.body.AssesmentId}]}).exec((count_error, count) => {
+        if (err) {
+          return res.json(count_error);
+        }
+        if(count<limit*page){
+            return res.json({msg:"invalid data"})
+        }
+        return res.json({
+          total: count,
+          page: page,  
+          student: doc
+        });
+      });
+    });
+})
 
+router.post("/teacherwise/report1",ValidUser,async(req,res)=>{
 
+    const rollno1=req.body.rollno
+    const cursor = Reports.find({$and:[{rollno:rollno1 }, {AssesmentId:req.body.AssesmentId }]},function(req,result){
+        res.json(result)
+    })
 
+})
+
+router.post("/assesmentwise/leaderboard",ValidUser,async(req,res)=>{
+
+    const class1 = req.body.class
+    const AssesmentId=req.body.AssesmentId
+    const arr=[]
+    const cursor=Reports.find({$and:[{class:class1 }, {AssesmentId:AssesmentId}]},{},{ sort: { 'Total' : -1 }},function(req,result){
+      //  console.log(result)
+            Reports.aggregate(
+                [
+                 
+                  {
+                    $group: {_id: "$name",
+                             "Total": {
+                                $avg: '$Total'
+                              }
+                            }
+                   },
+                   {
+                    $sort : { Total: -1 }
+                  } 
+                ],
+                 (e, d) => {
+                   if (!e) {
+                       
+                       console.log(d)
+                    var arrayOfStrings = d.map(function(obj) {
+                      arr.push(obj._id)
+                      console.log(arr)
+                     
+                    //   const cursor=Reports.find({rollno:rollno1},{},function (error,result) {
+                    //       console.log(result)
+                     // })                        
+                    });
+                  
+                      
+                   } else {
+                       console.log(e)
+                   }
+                   res.json(arr)
+               })
+    })
 })
 
 
 
+router.post("/classwise/topper1",ValidUser,async(req,res)=>{
 
-
+    Reports.aggregate(
+        [
+         
+          {
+            $group: {_id: "$rollno",
+                     "Total": {
+                        $avg: '$Total'
+                      }
+                    }
+           },
+           {
+            $sort : { Total: -1 }
+          } 
+        ],
+         (e, d) => {
+           if (!e) {
+            
+            Reports.find({})
+               
+              
+           } else {
+               console.log(e)
+           }
+       })
+})
 
        
 
