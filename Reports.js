@@ -11,7 +11,7 @@ const Reports=require('./Schema/ReportsSchema')
 
 
 
-router.post("/classwise/report1",async(req,res)=>{
+router.post("/create/report",async(req,res)=>{
 
    
    const result=req.body.Sub[0].Result
