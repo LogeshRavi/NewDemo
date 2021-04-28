@@ -675,37 +675,120 @@ router.post("/assesmentwise/leaderboard",ValidUser,async(req,res)=>{
 })
 
 
+router.get("/class/leaderboard",ValidUser,async(req,res)=>{
 
-// router.post("/classwise/topper1",ValidUser,async(req,res)=>{
+    const class1 = req.query.class
+    //const AssesmentId1=req.query.AssesmentId
+    
+    //console.log(class1 , AssesmentId)
+    const arr=[]
+   // const cursor=Reports.find({$and:[{class:class1 }, {AssesmentId:AssesmentId}]},{},{ sort: { 'Total' : -1 }},function(req,result){
+      //  console.log(result)
+      
+      console.log(class1)
+            Reports.aggregate(
+                [
+                  {  $match: {
+                        class: class1
+                    }
+                },
+                  {
+                    $group: {_id: "$name",
+                             
+                             "Total": {
+                                $avg: '$Total'
+                              }
+                            }
+                   },
+                   {
+                    $sort : { Total: -1 }
+                  } 
+                ],
+                 (e, d) => {
+                   if (!e) {
+                       
+                       console.log(d)
+                    var arrayOfStrings = d.map(function(obj) {
+                      arr.push(obj._id)
+                      console.log(arr)
+                     
+                    //   const cursor=Reports.find({rollno:rollno1},{},function (error,result) {
+                    //       console.log(result)
+                     // })                        
+                    });
+                  
+                      
+                   } else {
+                       console.log(e)
+                   }
+                   res.json(arr)
+               })
+   // })
+})
 
-//     Reports.aggregate(
-//         [
-         
-//           {
-//             $group: {_id: "$rollno",
-//                      "Total": {
-//                         $avg: '$Total'
-//                       }
-//                     }
-//            },
-//            {
-//             $sort : { Total: -1 }
-//           } 
-//         ],
-//          (e, d) => {
-//            if (!e) {
-            
-//             Reports.find({})
-               
-              
-//            } else {
-//                console.log(e)
-//            }
-//        })
-// })
+
+router.get("/subject/leaderboard",ValidUser,async(req,res)=>{
+
+    const GameName = req.query.GameName
+    const AssesmentId1=req.query.AssesmentId
+    
+    //console.log(class1 , AssesmentId)
+    const arr=[]
+   // const cursor=Reports.find({$and:[{class:class1 }, {AssesmentId:AssesmentId}]},{},{ sort: { 'Total' : -1 }},function(req,result){
+      //  console.log(result)
+      
+      console.log(GameName)
+            Reports.aggregate(
+                [
+                  {  $match: {
+                    GameName: GameName,
+                    AssesmentId:AssesmentId1
+                    }
+                },
+                  {
+                    $group: {_id: "$name",
+                             
+                             "Total": {
+                                $avg: '$Total'
+                              }
+                            }
+                   },
+                   {
+                    $sort : { Total: -1 }
+                  } 
+                ],
+                 (e, d) => {
+                   if (!e) {
+                       
+                       console.log(d)
+                    var arrayOfStrings = d.map(function(obj) {
+                      arr.push(obj._id)
+                      console.log(arr)
+                     
+                    //   const cursor=Reports.find({rollno:rollno1},{},function (error,result) {
+                    //       console.log(result)
+                     // })                        
+                    });
+                  
+                      
+                   } else {
+                       console.log(e)
+                   }
+                   res.json(arr)
+               })
+   // })
+})
 
        
+router.get("/student/progress",ValidUser,async(req,res)=>{
 
+   const rollno=req.user.rollno
+
+   const cursor=Reports.find({rollno:rollno},function(err,result){
+       res.json(result)
+   })
+
+})
      
 
 
