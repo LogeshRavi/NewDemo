@@ -626,15 +626,23 @@ router.post("/teacherwise/report1",ValidUser,async(req,res)=>{
 router.post("/assesmentwise/leaderboard",ValidUser,async(req,res)=>{
 
     const class1 = req.body.class
-    const AssesmentId=req.body.AssesmentId
+    const AssesmentId1=req.query.AssesmentId
+    
+    //console.log(class1 , AssesmentId)
     const arr=[]
-    const cursor=Reports.find({$and:[{class:class1 }, {AssesmentId:AssesmentId}]},{},{ sort: { 'Total' : -1 }},function(req,result){
+   // const cursor=Reports.find({$and:[{class:class1 }, {AssesmentId:AssesmentId}]},{},{ sort: { 'Total' : -1 }},function(req,result){
       //  console.log(result)
+      
+      console.log(AssesmentId1)
             Reports.aggregate(
                 [
-                 
+                  {  $match: {
+                        AssesmentId: AssesmentId1
+                    }
+                },
                   {
                     $group: {_id: "$name",
+                             
                              "Total": {
                                 $avg: '$Total'
                               }
@@ -663,38 +671,38 @@ router.post("/assesmentwise/leaderboard",ValidUser,async(req,res)=>{
                    }
                    res.json(arr)
                })
-    })
+   // })
 })
 
 
 
-router.post("/classwise/topper1",ValidUser,async(req,res)=>{
+// router.post("/classwise/topper1",ValidUser,async(req,res)=>{
 
-    Reports.aggregate(
-        [
+//     Reports.aggregate(
+//         [
          
-          {
-            $group: {_id: "$rollno",
-                     "Total": {
-                        $avg: '$Total'
-                      }
-                    }
-           },
-           {
-            $sort : { Total: -1 }
-          } 
-        ],
-         (e, d) => {
-           if (!e) {
+//           {
+//             $group: {_id: "$rollno",
+//                      "Total": {
+//                         $avg: '$Total'
+//                       }
+//                     }
+//            },
+//            {
+//             $sort : { Total: -1 }
+//           } 
+//         ],
+//          (e, d) => {
+//            if (!e) {
             
-            Reports.find({})
+//             Reports.find({})
                
               
-           } else {
-               console.log(e)
-           }
-       })
-})
+//            } else {
+//                console.log(e)
+//            }
+//        })
+// })
 
        
 
