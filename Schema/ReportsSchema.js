@@ -16,6 +16,9 @@ const ReportsSchema = ({
     AssesmentId: {
     type: String,
     required:true
+},   topicName: {
+  type: String,
+  required:true
 },
 GameName: {
   type: String,

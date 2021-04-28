@@ -63,6 +63,7 @@ console.log(data4)
          class:req.body.class,
          rollno:req.body.rollno,
          AssesmentId:req.body.AssesmentId,
+         topicName:req.body.topicName,
          GameName:req.body.GameName,
         Sub:
             data4
