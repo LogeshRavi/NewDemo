@@ -13,6 +13,10 @@ const StudentsSchema = mongoose.Schema({
     rollno:{
         type:String,
         required:true
+    },
+    schoolName:{
+        type:String,
+        required:true
     }
 
 
