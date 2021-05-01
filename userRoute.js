@@ -423,8 +423,8 @@ router.get("/assesment/alldata", ValidUser, async (req, res) => {
             }
           });
       }
-      const data = Schedule.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
-        res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
+      const data = Assesment.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
+        res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Assesment: results });
       })
     } else {
       res.send(err);
