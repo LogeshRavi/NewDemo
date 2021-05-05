@@ -15,15 +15,15 @@ router.post("/create/report",async(req,res)=>{
 
    
    const result=req.body.Sub[0].Result
-   console.log(result)
+  // console.log(result)
     
    var total=0
    for (var j = 0; j <3; j++){
     //console.log(j)
-    console.log(req.body.Sub[j].Result);
+  //  console.log(req.body.Sub[j].Result);
     var bool=await req.body.Sub[j].Result
     if(bool=='True'){
-        console.log(total)
+      //  console.log(total)
         total=total+1
     }
   
@@ -42,7 +42,11 @@ router.post("/create/report",async(req,res)=>{
 
 //const data;
     var data4=[]
-for (var j = 0; j <3; j++){
+
+sub_array = req.body.Sub
+
+console.log(sub_array)
+for (var j = 0; j <sub_array.length; j++){
 
   var  obj={
 
@@ -55,7 +59,7 @@ for (var j = 0; j <3; j++){
     data4[j]=obj
 
 }
-console.log(data4)
+//console.log(data4)
 
 
    const  data= await new Reports({
@@ -63,7 +67,7 @@ console.log(data4)
          class:req.body.class,
          rollno:req.body.rollno,
          AssesmentId:req.body.AssesmentId,
-         topicName:req.body.topicName,
+       //  topicName:req.body.topicName,
          GameName:req.body.GameName,
         Sub:
             data4
@@ -73,7 +77,7 @@ console.log(data4)
             Total:total
         
     })
-    console.log(data)
+  //  console.log(data)
 
     
 

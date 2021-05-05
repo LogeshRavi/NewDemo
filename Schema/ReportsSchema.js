@@ -18,7 +18,7 @@ const ReportsSchema = ({
     required:true
 },   topicName: {
   type: String,
-  required:true
+ 
 },
 GameName: {
   type: String,
