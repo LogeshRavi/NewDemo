@@ -9,6 +9,12 @@ const ReportsSchema = ({
     type: String,
     required:true
  },
+
+ studentUserName: {
+  type: String,
+  
+},
+
     rollno: {
     type: String,
     required:true

@@ -67,6 +67,7 @@ for (var j = 0; j <sub_array.length; j++){
          class:req.body.class,
          rollno:req.body.rollno,
          AssesmentId:req.body.AssesmentId,
+         studentUserName:req.body.studentUserName,
        //  topicName:req.body.topicName,
          GameName:req.body.GameName,
         Sub:
