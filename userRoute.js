@@ -536,9 +536,9 @@ router.route("/deleteStudents").delete(function (req, res) {
 
 //Get Student Class
 router.get("/getStudentClass1", ValidUser, async (req, res) => {
-  const user = req.user.name
+  const user = req.user.rollno
   console.log(user)
-  const Class = Schedule.find({ StudentsList: user }, function (req, results) {
+  const Class = Schedule.find({ studentRollNoList: user }, function (req, results) {
     console.log(results)
     res.json(results)
   }
@@ -547,9 +547,9 @@ router.get("/getStudentClass1", ValidUser, async (req, res) => {
 
 //get Student Class
 router.get("/getStudentAssessment1", ValidUser, async (req, res) => {
-  const user = req.user.name
+  const user = req.user.rollno
   console.log(user)
-  const Class = Assesment.find({ StudentsList: user }, function (req, results) {
+  const Class = Assesment.find({ studentRollNoList: user }, function (req, results) {
     console.log(results)
     res.json(results)
   }
@@ -1222,11 +1222,11 @@ router.get("/getstudentlist/assesment", async (req, res) => {
       if (err) {
   
       }
-        console.log(payload)
+        //console.log(payload)
       const id = payload
-      Educator.findById(id).then(data => {
+      Child.findById(id).then(data => {
         req.user = data
-        console.log(req.user)
+        //console.log(req.user)
         next()
       })
     })
@@ -1286,11 +1286,11 @@ router.get("/getstudentlist/assesment", async (req, res) => {
   
   })
 
-  router.get("/getStudentAssessment", ValidUser, async (req, res) => {
-    const username = req.user.rollno
-    console.log(username)
+  router.get("/getStudentAssessment2", NewValidUser, async (req, res) => {
+    const username = req.user.AddStudent[0].studentUserName
+    //console.log(username)
     Assesment.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
-      console.log(result)
+      //console.log(result)
   
       if (result) {
         for (var { id: id, CreatedTime: Ct, duration: d } of result) {
@@ -1335,5 +1335,36 @@ router.get("/getstudentlist/assesment", async (req, res) => {
       }
     });
   });
+
+
+  router.post('/login2', async (req, res) => {
+
+    var StudentExist = await Child.findOne({'AddStudent': {$elemMatch: {studentUserName: req.body.name,studentPassword:req.body.password}}})
+
+    
+      
+   
+    if (!StudentExist ) {
+      
+      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId or Password Not Correct" })
+    }
+   
+    if (StudentExist) {
+      
+      var userToken = await jwt.sign({ _id: StudentExist.id }, 'secretkey')
+        res.header('auth', userToken).send({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: StudentExist })
+
+    }
+    else
+    {
+      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId or Password Not Correct" })
+    }
+
+  
+
+  })
+
+
+
 
 module.exports = router;
