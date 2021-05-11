@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
-const childSchema = ({
+const childSchema = mongoose.Schema({
 
-    AddStudent:[{
+  
 
         StudentName :{
             type:String,
@@ -27,9 +27,12 @@ const childSchema = ({
         studentPassword:{
             type:String,
             required:true,
+        },
+        Email:{
+            type:String
         }
     
-    }]
+    
     
 })
 
