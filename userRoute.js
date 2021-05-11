@@ -69,75 +69,75 @@ router.post('/teacher/register', async (req, res) => {
 })
 
 
-router.post('/educator/register', async (req, res) => {
+// router.post('/educator/register', async (req, res) => {
 
-  // StudentName = req.body.StudentName,
-  // Age=req.body.Age
+//   // StudentName = req.body.StudentName,
+//   // Age=req.body.Age
 
-  var EmailExist = await Educator.findOne({ Email: req.body.Email })
-  if (EmailExist) {
-    return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
-  }
+//   var EmailExist = await Educator.findOne({ Email: req.body.Email })
+//   if (EmailExist) {
+//     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
+//   }
 
-  var data4=[]
+//   var data4=[]
 
-  sub_array = req.body.AddStudent
-var child;
+//   sub_array = req.body.AddStudent
+// var child;
   
-  console.log(sub_array.length)
+//   console.log(sub_array.length)
   
-  for (var j = 0; j <sub_array.length; j++){
+//   for (var j = 0; j <sub_array.length; j++){
 
    
 
-    var  obj={
+//     var  obj={
 
         
-      StudentName:req.body.AddStudent[j].StudentName,
-      Age:req.body.AddStudent[j].Age,
-      School:req.body.AddStudent[j].School,
-      ModeofEducation:req.body.AddStudent[j].ModeofEducation,
-      studentUserName:req.body.AddStudent[j].studentUserName+"_"+req.body.Email,
-      studentPassword:req.body.AddStudent[j].studentPassword,
+//       StudentName:req.body.AddStudent[j].StudentName,
+//       Age:req.body.AddStudent[j].Age,
+//       School:req.body.AddStudent[j].School,
+//       ModeofEducation:req.body.AddStudent[j].ModeofEducation,
+//       studentUserName:req.body.AddStudent[j].studentUserName+"_"+req.body.Email,
+//       studentPassword:req.body.AddStudent[j].studentPassword,
 
      
-  }
-  child=new Child({
-    AddStudent: obj
- })
- var child1=await child.save();
-  data4[j]=obj
+//   }
+//   child=new Child({
+//     AddStudent: obj
+//  })
+//  var child1=await child.save();
+//   data4[j]=obj
  
-  console.log(obj)
-  }
+//   console.log(obj)
+//   }
 
   
 
-  const user = new Educator({
+//   const user = new Educator({
 
-    Email:req.body.Email,
-    eUserName:req.body.eUserName,
-    ePassword:req.body.ePassword,
-    phoneNumber:req.body.phoneNumber,
-    AddStudent:data4,
+//     Email:req.body.Email,
+//     eUserName:req.body.eUserName,
+//     ePassword:req.body.ePassword,
+//     phoneNumber:req.body.phoneNumber,
+//     AddStudent:data4,
    
 
-  })
+//   })
 
   
 
-   var child1=await child.save();
-  var data = await user.save();
-    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
+//    var child1=await child.save();
+//   var data = await user.save();
+//     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
 
 
   
-})
+// })
 
 
-router.post('/educator/register1', async (req, res) => {
+router.post('/educator/register', async (req, res) => {
 
-  var EmailExist = await Educator.findOne({ Email: req.body.Email })
+  var EmailExist = await Educator.findOne({ Email: req.body.Email }) 
   if (EmailExist) {
     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
   }
