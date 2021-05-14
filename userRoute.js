@@ -144,6 +144,7 @@ router.post('/educator/register', async (req, res) => {
 
   const user = new Educator({
 
+    Name:req.body.Name,
     Email:req.body.Email,
     eUserName:req.body.eUserName,
     ePassword:req.body.ePassword,
@@ -164,7 +165,9 @@ router.post('/add/children', async (req, res) => {
   ModeofEducation:req.body.ModeofEducation,
   studentUserName:req.body.studentUserName+'_'+req.body.Email,
   studentPassword:req.body.studentPassword,
-  Email:req.body.Email
+  Email:req.body.Email,
+  UserName:req.body.studentUserName
+
   })
   var data = await user.save();
     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
@@ -1186,8 +1189,8 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
       temp_obj.id =indivdual_obj.id
       temp_obj.topicname = indivdual_obj.topicName
       temp_obj.subject =indivdual_obj.subject
-      temp_obj.class =indivdual_obj.class
       temp_obj.Date =indivdual_obj.Date
+      temp_obj.Duration=indivdual_obj.duration
       result_list.push(temp_obj)
     }
     console.log(result_list)
@@ -1394,8 +1397,6 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 
     var StudentExist = await Child.findOne( {studentUserName: req.body.name,studentPassword:req.body.password})
 
-    
-      
    
     if (!StudentExist ) {
       
@@ -1419,7 +1420,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 
   router.post("/educator/update", NewValidUser, async (req, res) => {
     const Email=req.user.Email
-
+    const Email1=req.body.Email
     var update = await Educator.updateMany({ Email: Email }, {
       $set: {
         Email:req.body.Email,
@@ -1434,23 +1435,57 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
         Email:req.body.Email,
       }
     })
-
-    Child.find({Email: Email},function (req,result) {
-      let result1 = result.map(a => a.studentUserName);
-     console.log(result1)
-      var update =  Child.updateMany({ studentUserName: result1 }, {
-        $set: {
-          studentUserName:+'_'+Email,
+ 
+    var name= Child.find({Email:Email1}, function (err,result) {
+      if(result){
+        for (var {id:id,UserName:UserName,Email:Email}of result) {
+          studentUserName2=UserName+"_"+Email
+          console.log(studentUserName2)
+           Child.findByIdAndUpdate(id, {
+            $set: {
+              studentUserName:studentUserName2
+            }
+          },
+            { new: true },
+            function (err, user) {
+              if (err) {
+                console.log("Error")
+              } else {
+                  
+              }
+            });
         }
-      })
-      
+        const data = Child.find({ Email:Email1 }, function (req, results) {
+          res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Assesment: results });
+        })
+      }
     })
-   
   
-    console.log("updated")
+  
+   
 
 
   })
 
+  // for (var {id:id,UserName:UserName,Email:Email}of result){
+  //   console.log(id,UserName,Email)
+  //   var studentUserName2=UserName+"_"+Email
+  //    console.log(studentUserName2)
+  //     Child.findByIdAndUpdate(id, {
+  //     $set: {
+  //       studentUserName:studentUserName2
+  //     }
+  //   }),
+  //     { new: true },
+  //     function (err, user) {
+  //       if (err) {
+  //         console.log("Error")
+  //       } else {
+          
+  //       }
+  //     };
+  // }
+
+  
 
 module.exports = router;

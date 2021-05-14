@@ -30,6 +30,10 @@ const childSchema = mongoose.Schema({
         },
         Email:{
             type:String
+        },
+        UserName:{
+            type:String,
+            required:true,
         }
     
     

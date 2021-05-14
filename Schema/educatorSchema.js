@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const educatorSchema = mongoose.Schema({
+    Name:{
+        type:String,
+        required:true,
+    },
     Email:{
         type:String,
         required:true,
