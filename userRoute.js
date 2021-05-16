@@ -2,6 +2,7 @@ const router = require('express').Router();
 const User = require('./Schema/userSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
+const nodemailer=require('nodemailer')
 const Schedule = require('./Schema/ScheduleSchema');
 const Assesment = require('./Schema/AssesmentSchema')
 const Students = require('./Schema/StudentsSchema');
@@ -11,7 +12,8 @@ const StudentsData = require('./Schema/StudentsData')
 const School = require('./Schema/SchoolSchema')
 const Reports = require('./Schema/ReportsSchema')
 const Educator=require('./Schema/educatorSchema');
-const Child=require('./Schema/NewStudentSchema')
+const Child=require('./Schema/NewStudentSchema');
+
 
 
 //teacher register
@@ -1485,6 +1487,115 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   //       }
   //     };
   // }
+ const JWT_Secret="secretkey"
+
+  router.post("/forgot/password", async (req, res) => {
+    
+    const email=req.body.Email
+    
+    var EmailExist = await Educator.findOne({ Email: email })
+
+    if (!EmailExist) {
+      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Not Exist" })
+    }
+
+    const secret=JWT_Secret+EmailExist.ePassword
+  
+      const id=EmailExist.id
+    
+
+    var userToken = jwt.sign({_id:id}, 'secretkey')
+    const link=`https://gamelogin2.herokuapp.com/api/reset-password/${userToken}`
+    
+
+    var sender =nodemailer.createTransport({
+      service:'gmail',
+      auth:{
+        user:'rlogeshfive@gmail.com',
+        pass:'vihaan567'
+      }
+    })
+
+    var data={
+      from:'rlogeshfive@gmail.com',
+      to:email,
+      subject:'Account Activiation Link',
+      html:`${link}`
+    }
+
+    sender.sendMail(data,function (err,info) {
+       if(err){
+         console.log(err)
+       }
+       else{
+         res.json({Success:'Mail send successfully',Token:userToken})
+       }
+    })
+    
+
+  })
+
+  router.get("/reset-password/:token", async (req, res) => {
+
+    const token=req.params.token
+        jwt.verify(token, 'secretkey', (err, payload) => {
+            if (err) {
+        
+            }
+        res.render('reset-password') 
+        })
+     })
+
+  router.post("/reset-password/:token", async (req, res) => {
+
+   // var password=req.body.password
+   const {password,password2}=req.body
+    //const id=req.params.id
+    console.log(password,password2)
+    const token=req.params.token
+    
+    console.log(token)
+
+    if (password !== password2) {
+     return res.send( 'Passwords do not match, pls try again ' );
+  }
+   
+    try {
+      //const payload=jwt.verify(token,'secretkey')
+      jwt.verify(token, 'secretkey', (err, payload) => {
+        if (err) {
+    
+        }
+          console.log(payload)
+        const id = payload._id
+        
+        Educator.findByIdAndUpdate(id, {
+          $set: {
+            ePassword:password
+          }
+        },
+          { new: true },
+          function (err, user) {
+            if (err) {
+              console.log("Error")
+            } else {
+                res.send('password updated succesfully,Now login in Terv kids App')
+            }
+          });
+      })
+
+      
+
+      
+
+      
+    } catch (error) {
+      
+    }
+  
+
+
+  })
 
   
 

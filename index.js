@@ -12,6 +12,7 @@ const Schools=require('./School')
 //app.use(formData.parse());
 app.use(express.json());
 app.use(bodyParser.urlencoded({  extended: true }))
+app.set('view engine', 'ejs')
 //app.use(formidableMiddleware());
 app.use(morgan('dev'))
 
@@ -28,4 +29,6 @@ mongoose.connect('mongodb+srv://demo:E8wxFGqeJz0VkKWm@cluster0.jrdfh.mongodb.net
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Our app is running on port ${ PORT }`);
+
 });
+
