@@ -28,13 +28,17 @@ const childSchema = mongoose.Schema({
             type:String,
             required:true,
         },
-        Email:{
+        EducatorEmail:{
             type:String,
             required:true,
         },
         ProfilePictureId:{
             type:String,
-            
+            required:true
+        },
+        PasswordType:{
+            type:String,
+            required:true
         }
         
     

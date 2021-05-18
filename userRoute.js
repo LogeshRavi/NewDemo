@@ -288,8 +288,9 @@ router.post('/add/children', async (req, res) => {
   ModeofEducation:req.body.ModeofEducation,
   studentUserName:req.body.studentUserName,
   studentPassword:req.body.studentPassword,
-  Email:req.body.Email,
-  ProfilePictureId:req.body.ProfilePictureId
+  EducatorEmail:req.body.EducatorEmail,
+  ProfilePictureId:req.body.ProfilePictureId,
+  PasswordType:req.body.PasswordType
 
   })
   var data = await user.save();
@@ -1552,7 +1553,8 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     const Email1=req.body.Email
     var update = await Educator.updateMany({ Email: Email }, {
       $set: {
-        Email:req.body.Email,
+       // Email:req.body.Email,
+        Name:req.body.Name,
         eUserName:req.body.eUserName,
         ePassword:req.body.ePassword,
         phoneNumber:req.body.phoneNumber,
@@ -1596,18 +1598,19 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   router.post("/child/update", NewValidUser, async (req, res) => {
 
     const Email=req.user.Email
+    const stu
     //const Email1=req.body.Email
-    var update = await Child.updateMany({ Email: Email }, {
+    var update = await Child.updateMany({  }, {
       $set: {
         StudentName:req.body.StudentName,
         Age:req.body.Age,
         School:req.body.School,
         ModeofEducation:req.body.ModeofEducation,
-        studentUserName:req.body.studentUserName+'_'+Email,
-        studentPassword:req.body.studentPassword
+        studentUserName:req.body.studentUserName,
+        studentPassword:req.body.studentPassword,
+
       }
     })
-
   })
 
 
