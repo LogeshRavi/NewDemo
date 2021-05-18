@@ -179,7 +179,10 @@ router.post('/educator/register', async (req, res) => {
   `;
  
   var sender =nodemailer.createTransport({
-    service:'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
     auth:{
       user:'rlogeshfive@gmail.com',
       pass:'vihaan567'
@@ -189,7 +192,7 @@ router.post('/educator/register', async (req, res) => {
   var data1={
     from:'rlogeshfive@gmail.com',
     to:Email,
-    subject:'One Time Password(OTP)',
+    subject:'One Time Password(OTP) ',
     html: output
   }
   
