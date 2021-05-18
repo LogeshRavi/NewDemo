@@ -13,8 +13,13 @@ const School = require('./Schema/SchoolSchema')
 const Reports = require('./Schema/ReportsSchema')
 const Educator=require('./Schema/educatorSchema');
 const Child=require('./Schema/NewStudentSchema');
+const bodyParser = require('body-parser')
+const {validateConfirmPassword}=require('./views/validator')
+//const { check, validationResult } = require('express-validator')
+const randomstring = require("randomstring");
+const { body } = require('express-validator/check');
 
-
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 //teacher register
 router.post('/teacher/register', async (req, res) => {
@@ -139,10 +144,16 @@ router.post('/teacher/register', async (req, res) => {
 
 router.post('/educator/register', async (req, res) => {
 
+ const Email=req.body.Email
   var EmailExist = await Educator.findOne({ Email: req.body.Email }) 
   if (EmailExist) {
     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
   }
+
+  const secretCode = randomstring.generate({
+    length: 6,
+    charset: 'numeric'
+  })
 
   const user = new Educator({
 
@@ -151,13 +162,120 @@ router.post('/educator/register', async (req, res) => {
     eUserName:req.body.eUserName,
     ePassword:req.body.ePassword,
     phoneNumber:req.body.phoneNumber,
-    
+    otp:secretCode,
+    status:"Y",
+    isVerify:"N"
   })
   var data = await user.save();
-    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
+
+  const output = `
+    
+    <h2>TERV KIDS |OTP ALERT</h2>
+    <h4>Hi ${req.body.Email}</h4>
+    <br></br>
+    <h4>Please enter the below code to complete verification</h4>
+   <br/>
+   <h1> ${secretCode} </h1>
+  `;
+ 
+  var sender =nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+      user:'rlogeshfive@gmail.com',
+      pass:'vihaan567'
+    }
+  })
+
+  var data1={
+    from:'rlogeshfive@gmail.com',
+    to:Email,
+    subject:'One Time Password(OTP)',
+    html: output
+  }
+  
+  sender.sendMail(data1,function (err,info) {
+     if(err){
+       console.log(err)
+     }
+     else{
+      res.json({ StatusCode: 200, StatusMessage: "Success", Response: "OTP Send Successfully", user: data })
+
+     }
+  })
+
+   // res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
 
 })
-//new 
+
+router.post('/otp-verification', async (req, res) => {
+
+  const email=req.query.Email
+  const otp=req.body.otp
+  
+  var EmailExist = await Educator.findOne({ Email:email })
+   const otp1=EmailExist.otp
+  if(otp==otp1){
+    
+    var update = await Educator.updateMany({ Email: email }, {
+      $set: {
+        isVerify:"Y"
+      }
+    })
+    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Account Verify" })
+  }
+  else{
+    res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Pls Check OTP "})
+
+  }
+
+})
+
+// create new otp
+router.post('/create-otp', async (req, res) => {
+
+  const email=req.query.Email
+
+  const secretCode = randomstring.generate({
+    length: 6,
+    charset: 'numeric'
+  })
+
+  var update = await Educator.updateMany({ Email: email }, {
+    $set: {
+      otp:secretCode
+    }
+  })
+
+  var sender =nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+      user:'rlogeshfive@gmail.com',
+      pass:'vihaan567'
+    }
+  })
+
+  var data1={
+    from:'rlogeshfive@gmail.com',
+    to:email,
+    subject:'One Time Password(OTP)',
+    html: `${secretCode}` 
+  }
+  
+  sender.sendMail(data1,function (err,info) {
+     if(err){
+       console.log(err)
+     }
+     else{
+      res.json({ StatusCode: 200, StatusMessage: "Success", Response: "OTP Send Successfully" })
+
+     }
+  })
+
+
+
+})
+
+//new child
 router.post('/add/children', async (req, res) => {
     
   const user = new Child({
@@ -165,7 +283,7 @@ router.post('/add/children', async (req, res) => {
   Age:req.body.Age,
   School:req.body.School,
   ModeofEducation:req.body.ModeofEducation,
-  studentUserName:req.body.studentUserName+'_'+req.body.Email,
+  studentUserName:req.body.studentUserName,
   studentPassword:req.body.studentPassword,
   Email:req.body.Email,
   UserName:req.body.studentUserName
@@ -1259,18 +1377,24 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 
    
     let results;
-    if(ParentExist && ParentExist.ePassword==req.body.password){
+    if(ParentExist.isVerify=="Y"){
+      if(ParentExist && ParentExist.ePassword==req.body.password){
       
-      const cursor=Child.find({Email:req.body.Email},function  (err,result) {
-        results=result
-      console.log(results)
-      var userToken = jwt.sign({ _id: ParentExist.id }, 'secretkey')
-        res.header('auth', userToken).json({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: ParentExist ,Student_List:results})
-      })
+        const cursor=Child.find({Email:req.body.Email},function  (err,result) {
+          results=result
+        console.log(results)
+        var userToken = jwt.sign({ _id: ParentExist.id }, 'secretkey')
+          res.header('auth', userToken).json({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: ParentExist ,Student_List:results})
+        })
+      }
+      else{
+        return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: " Password Not Correct" })
+      }
     }
     else{
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: " Password Not Correct" })
+      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Your Account is Not Verify" })
     }
+   
   })
 
   const NewValidUser = (req, res, next) => {
@@ -1463,31 +1587,27 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
       }
     })
   
-  
-   
+  })
 
+  //incomplete
+  router.post("/child/update", NewValidUser, async (req, res) => {
+
+    const Email=req.user.Email
+    //const Email1=req.body.Email
+    var update = await Child.updateMany({ Email: Email }, {
+      $set: {
+        StudentName:req.body.StudentName,
+        Age:req.body.Age,
+        School:req.body.School,
+        ModeofEducation:req.body.ModeofEducation,
+        studentUserName:req.body.studentUserName+'_'+Email,
+        studentPassword:req.body.studentPassword
+      }
+    })
 
   })
 
-  // for (var {id:id,UserName:UserName,Email:Email}of result){
-  //   console.log(id,UserName,Email)
-  //   var studentUserName2=UserName+"_"+Email
-  //    console.log(studentUserName2)
-  //     Child.findByIdAndUpdate(id, {
-  //     $set: {
-  //       studentUserName:studentUserName2
-  //     }
-  //   }),
-  //     { new: true },
-  //     function (err, user) {
-  //       if (err) {
-  //         console.log("Error")
-  //       } else {
-          
-  //       }
-  //     };
-  // }
- const JWT_Secret="secretkey"
+
 
   router.post("/forgot/password", async (req, res) => {
     
@@ -1499,13 +1619,24 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
       return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Not Exist" })
     }
 
-    const secret=JWT_Secret+EmailExist.ePassword
+    //const secret=JWT_Secret+EmailExist.ePassword
   
       const id=EmailExist.id
     
 
     var userToken = jwt.sign({_id:id}, 'secretkey')
-    const link=`https://gamelogin2.herokuapp.com/api/reset-password/${userToken}`
+    const link=`http://localhost:3000/api/reset-password/${userToken}`
+
+    const output = `
+    
+    <h2>TERV KIDS |Reset Password</h2>
+    <h3>Hi ${req.body.Email}</h3>
+    <br></br>
+    <h4>Forgot Password ? No Problem !</h4>
+    <h4>Reset Your Password by clicking below link</h4>
+   <br/>
+   <h3> ${link} </h3>
+  `;
     
 
     var sender =nodemailer.createTransport({
@@ -1520,7 +1651,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
       from:'rlogeshfive@gmail.com',
       to:email,
       subject:'Account Activiation Link',
-      html:`${link}`
+      html:output
     }
 
     sender.sendMail(data,function (err,info) {
@@ -1531,12 +1662,10 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
          res.json({Success:'Mail send successfully',Token:userToken})
        }
     })
-    
-
   })
 
   router.get("/reset-password/:token", async (req, res) => {
-
+    [validateConfirmPassword]
     const token=req.params.token
         jwt.verify(token, 'secretkey', (err, payload) => {
             if (err) {
@@ -1546,15 +1675,26 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
         })
      })
 
-  router.post("/reset-password/:token", async (req, res) => {
+     
 
+  router.post("/reset-password/:token", body('passwordConfirmation').custom((value, { req }) => {
+    if (value !== req.body.password) {
+        throw new Error('Password confirmation does not match password');
+        }
+      }), async (req, res) => {
+
+    // req.check('password', 'Password is invalid Min 4 length').isLength({min: 4})
+    // req.check('password', 'Password and Confirm Password is Not Equal').equals(req.body.password2);
+
+
+    [validateConfirmPassword]
    // var password=req.body.password
    const {password,password2}=req.body
     //const id=req.params.id
     console.log(password,password2)
     const token=req.params.token
     
-    console.log(token)
+    //console.log(token)
 
     if (password !== password2) {
      return res.send( 'Passwords do not match, pls try again ' );

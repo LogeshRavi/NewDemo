@@ -21,6 +21,15 @@ const educatorSchema = mongoose.Schema({
         type:String,
         required:true,
     },
+    status:{
+        type:String,
+    },
+    isVerify:{
+        type:String
+    },
+    otp:{
+        type:Number
+    }
    
 })
 
