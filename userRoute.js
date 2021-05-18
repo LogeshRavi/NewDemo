@@ -1598,7 +1598,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   router.post("/child/update", NewValidUser, async (req, res) => {
 
     const Email=req.user.Email
-    const stu
+    
     //const Email1=req.body.Email
     var update = await Child.updateMany({  }, {
       $set: {
