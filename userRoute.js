@@ -289,7 +289,7 @@ router.post('/add/children', async (req, res) => {
   studentUserName:req.body.studentUserName,
   studentPassword:req.body.studentPassword,
   Email:req.body.Email,
-  UserName:req.body.studentUserName
+  ProfilePictureId:req.body.ProfilePictureId
 
   })
   var data = await user.save();

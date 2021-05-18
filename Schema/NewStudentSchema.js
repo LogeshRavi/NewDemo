@@ -29,12 +29,14 @@ const childSchema = mongoose.Schema({
             required:true,
         },
         Email:{
-            type:String
-        },
-        UserName:{
             type:String,
             required:true,
+        },
+        ProfilePictureId:{
+            type:String,
+            
         }
+        
     
     
     
