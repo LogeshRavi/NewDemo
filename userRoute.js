@@ -145,7 +145,8 @@ router.post('/teacher/register', async (req, res) => {
 router.post('/educator/register', async (req, res) => {
 
  const Email=req.body.Email
-  var EmailExist = await Educator.findOne({ Email: req.body.Email }) 
+ const status="Y"
+  var EmailExist = await Educator.findOne({ Email: req.body.Email , isVerify:status }) 
   if (EmailExist) {
     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
   }
@@ -1333,7 +1334,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   //   const rollno=req.query.rollno
   //   const AssesmentId=req.query.AssesmentId
   //   Assesment.findById(AssesmentId ,  function (err, result) {
-  //     res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result.GameName})
+  //   res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result.GameName})
     
   // })
 
@@ -1594,26 +1595,34 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   
   })
 
-  //incomplete
+  //Edit Children 
   router.post("/child/update", NewValidUser, async (req, res) => {
 
-    const Email=req.user.Email
-    
+    //const Email=req.user.Email
+    const studentUserName1=req.query.studentUserName
     //const Email1=req.body.Email
-    var update = await Child.updateMany({  }, {
+    var update = await Child.updateMany({ studentUserName:studentUserName1 }, {
       $set: {
-        StudentName:req.body.StudentName,
         Age:req.body.Age,
         School:req.body.School,
         ModeofEducation:req.body.ModeofEducation,
-        studentUserName:req.body.studentUserName,
         studentPassword:req.body.studentPassword,
-
       }
     })
+    const data = Child.find({ studentUserName:studentUserName1 }, function (req, results) {
+      res.send({ StatusCode: 200, StatusMessage: "Success", Response: "Student details Updated", StudentDeatils: results });
   })
+})
 
-
+  // Delete Children
+  router.route("/deletechildren").delete(function (req, res) {
+    const studentUserName1=req.query.studentUserName
+    const data = Child.findOneAndDelete({studentUserName:studentUserName1}, function (err, results) {
+      res.send({ StatusCode: 200, StatusMessage: "Success", Response: "Delete Student Record", StudentDeatils: results });
+  
+    })
+  })
+ 
 
   router.post("/forgot/password", async (req, res) => {
     
