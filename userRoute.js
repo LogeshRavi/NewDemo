@@ -120,7 +120,7 @@ router.post('/educator/register', async (req, res) => {
        console.log(err)
      }
      else{
-      res.json({ StatusCode: 200, StatusMessage: "Success", Response: "OTP Send Successfully",User:data })
+      res.json({ StatusCode: 200, StatusMessage: "Success", Response: "OTP Send Successfully",user:data })
 
      }
   })
