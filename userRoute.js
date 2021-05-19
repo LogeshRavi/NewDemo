@@ -21,32 +21,14 @@ const { body } = require('express-validator/check');
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-//teacher register
+//teacher register  //no need
 router.post('/teacher/register', async (req, res) => {
   try {
     var empidExist = await User.findOne({ empid: req.body.empid })
     if (empidExist) {
       return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Employee ID Already Exist" })
     }
-    // var schoolExist=await User.findOne({schoolName:req.body.schoolName})
-
-    // if(schoolExist){
-
-    //   var validCode = await User.compare(req.body.code,schoolExist.code)
-    //   console.log('not success')
-    //       if(validCode){
-
-    //         return res.status(200).json({status:200,message:"successfully register"})
-    //       }
-    //     //   else{
-    //     //     return res.status(400).json({status:400,message:"code not valid"})
-    //     //   }
-    // }
-
-
-
-    //  var hash= await bcrypt.hash(req.body.password,10)
-
+    
     var teacher = new Teacher({
       // name:req.body.name,
       // class:req.body.class,
@@ -76,72 +58,8 @@ router.post('/teacher/register', async (req, res) => {
 })
 
 
-// router.post('/educator/register', async (req, res) => {
 
-//   // StudentName = req.body.StudentName,
-//   // Age=req.body.Age
-
-//   var EmailExist = await Educator.findOne({ Email: req.body.Email })
-//   if (EmailExist) {
-//     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
-//   }
-
-//   var data4=[]
-
-//   sub_array = req.body.AddStudent
-// var child;
-  
-//   console.log(sub_array.length)
-  
-//   for (var j = 0; j <sub_array.length; j++){
-
-   
-
-//     var  obj={
-
-        
-//       StudentName:req.body.AddStudent[j].StudentName,
-//       Age:req.body.AddStudent[j].Age,
-//       School:req.body.AddStudent[j].School,
-//       ModeofEducation:req.body.AddStudent[j].ModeofEducation,
-//       studentUserName:req.body.AddStudent[j].studentUserName+"_"+req.body.Email,
-//       studentPassword:req.body.AddStudent[j].studentPassword,
-
-     
-//   }
-//   child=new Child({
-//     AddStudent: obj
-//  })
-//  var child1=await child.save();
-//   data4[j]=obj
- 
-//   console.log(obj)
-//   }
-
-  
-
-//   const user = new Educator({
-
-//     Email:req.body.Email,
-//     eUserName:req.body.eUserName,
-//     ePassword:req.body.ePassword,
-//     phoneNumber:req.body.phoneNumber,
-//     AddStudent:data4,
-   
-
-//   })
-
-  
-
-//    var child1=await child.save();
-//   var data = await user.save();
-//     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
-
-
-  
-// })
-
-
+//Educator Register Api
 router.post('/educator/register', async (req, res) => {
 
  const Email=req.body.Email
@@ -211,6 +129,7 @@ router.post('/educator/register', async (req, res) => {
 
 })
 
+//OTP verification for educator
 router.post('/otp-verification', async (req, res) => {
 
   const email=req.query.Email
@@ -279,7 +198,7 @@ router.post('/create-otp', async (req, res) => {
 
 })
 
-//new child
+//add new child
 router.post('/add/children', async (req, res) => {
     
   const user = new Child({
@@ -298,7 +217,8 @@ router.post('/add/children', async (req, res) => {
     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
 
 })
-//student register
+
+//student register //no need
 router.post('/student/register', async (req, res) => {
 
   try {
@@ -347,7 +267,7 @@ router.post('/student/register', async (req, res) => {
   }
 })
 
-//login
+//login //no need
 router.post('/login', async (req, res) => {
   try {
     if (req.body.name && !data && req.body.role=="teacher") {
@@ -408,7 +328,7 @@ const ValidUser = (req, res, next) => {
 }
 
 
-//teacher Update
+//teacher Update //no need
 router.post("/teacher/update", ValidUser, async (req, res) => {
   const eid = req.user.id
 
@@ -431,7 +351,7 @@ router.post("/teacher/update", ValidUser, async (req, res) => {
 
 })
 
-//student Update
+//student Update //no nedd
 router.post("/student/update", ValidUser, async (req, res) => {
   const eid = req.user.id
 
@@ -514,8 +434,6 @@ router.post("/scheduleclass/kg", ValidUser, async (req, res) => {
 
 
 })
-
-
 
 
 //fetch schedule data
@@ -1385,7 +1303,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     if(ParentExist.isVerify=="Y"){
       if(ParentExist && ParentExist.ePassword==req.body.password){
       
-        const cursor=Child.find({Email:req.body.Email},function  (err,result) {
+        const cursor=Child.find({EducatorEmail:req.body.Email},function  (err,result) {
           results=result
         console.log(results)
         var userToken = jwt.sign({ _id: ParentExist.id }, 'secretkey')
