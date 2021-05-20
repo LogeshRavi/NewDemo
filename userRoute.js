@@ -14,8 +14,8 @@ const Reports = require('./Schema/ReportsSchema')
 const Educator=require('./Schema/educatorSchema');
 const Child=require('./Schema/NewStudentSchema');
 const bodyParser = require('body-parser')
-const {validateConfirmPassword}=require('./views/validator')
-//const { check, validationResult } = require('express-validator')
+const {verifyPasswordsMatch}=require('./views/validator')
+const { check, validationResult } = require('express-validator')
 const randomstring = require("randomstring");
 const { body } = require('express-validator/check');
 
@@ -1466,10 +1466,9 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   
 
   })
-
+// educator update
   router.post("/educator/update", NewValidUser, async (req, res) => {
     const Email=req.user.Email
-    const Email1=req.body.Email
     var update = await Educator.updateMany({ Email: Email }, {
       $set: {
        // Email:req.body.Email,
@@ -1479,46 +1478,11 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
         phoneNumber:req.body.phoneNumber,
       }
     })
-
-    var update = await Child.updateMany({ Email: Email }, {
-      $set: {
-        Email:req.body.Email,
-      }
-    })
- 
-    var name= Child.find({Email:Email1}, function (err,result) {
-      if(result){
-        for (var {id:id,UserName:UserName,Email:Email}of result) {
-          studentUserName2=UserName+"_"+Email
-          console.log(studentUserName2)
-           Child.findByIdAndUpdate(id, {
-            $set: {
-              studentUserName:studentUserName2
-            }
-          },
-            { new: true },
-            function (err, user) {
-              if (err) {
-                console.log("Error")
-              } else {
-                  
-              }
-            });
-        }
-        const data = Child.find({ Email:Email1 }, function (req, results) {
-          res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Assesment: results });
-        })
-      }
-    })
-  
   })
 
   //Edit Children 
   router.post("/child/update", NewValidUser, async (req, res) => {
-
-    //const Email=req.user.Email
     const studentUserName1=req.query.studentUserName
-    //const Email1=req.body.Email
     var update = await Child.updateMany({ studentUserName:studentUserName1 }, {
       $set: {
         Age:req.body.Age,
@@ -1541,12 +1505,12 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     })
   })
  
-
+//forgot password
   router.post("/forgot/password", async (req, res) => {
     
     const email=req.body.Email
     
-    var EmailExist = await Educator.findOne({ Email: email })
+    var EmailExist = await Educator.findOne({$or: [{'Email': email}, {'phoneNumber': email}]})
 
     if (!EmailExist) {
       return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Not Exist" })
@@ -1555,15 +1519,21 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     //const secret=JWT_Secret+EmailExist.ePassword
   
       const id=EmailExist.id
+      console.log(id)
+      let Email1
+     await Educator.findById(id,function (err,result) {
+        Email1=result.Email
+        console.log(result)
+      })
     
-
-    var userToken = jwt.sign({_id:id}, 'secretkey')
-    const link=`http://localhost:3000/api/reset-password/${userToken}`
+console.log(Email1)
+    var userToken = jwt.sign({_id:id}, 'secretkey',{expiresIn:'15m'})
+    const link=`https://gamelogin2.herokuapp.com/api/reset-password/${userToken}`
 
     const output = `
     
     <h2>TERV KIDS |Reset Password</h2>
-    <h3>Hi ${req.body.Email}</h3>
+    <h3>Hi ${Email1}</h3>
     <br></br>
     <h4>Forgot Password ? No Problem !</h4>
     <h4>Reset Your Password by clicking below link</h4>
@@ -1582,7 +1552,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 
     var data={
       from:'rlogeshfive@gmail.com',
-      to:email,
+      to:Email1,
       subject:'Account Activiation Link',
       html:output
     }
@@ -1598,11 +1568,11 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   })
 
   router.get("/reset-password/:token", async (req, res) => {
-    [validateConfirmPassword]
+    
     const token=req.params.token
         jwt.verify(token, 'secretkey', (err, payload) => {
             if (err) {
-        
+              return res.send('Link invalid or expired')
             }
         res.render('reset-password') 
         })
@@ -1610,29 +1580,35 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 
      
 
-  router.post("/reset-password/:token", body('passwordConfirmation').custom((value, { req }) => {
-    if (value !== req.body.password) {
+  router.post("/reset-password/:token", urlencodedParser, [
+
+    body('password','Password Should Not be Empty').notEmpty(),
+    body('password2').custom((value, { req }) => {
+      if (value !== req.body.password) {
         throw new Error('Password confirmation does not match password');
-        }
-      }), async (req, res) => {
+      }
+    return true;
 
-    // req.check('password', 'Password is invalid Min 4 length').isLength({min: 4})
-    // req.check('password', 'Password and Confirm Password is Not Equal').equals(req.body.password2);
-
-
-    [validateConfirmPassword]
-   // var password=req.body.password
-   const {password,password2}=req.body
-    //const id=req.params.id
-    console.log(password,password2)
-    const token=req.params.token
-    
-    //console.log(token)
-
-    if (password !== password2) {
-     return res.send( 'Passwords do not match, pls try again ' );
-  }
+    })
    
+   ] ,async (req, res) => {
+
+   
+  
+    const token1=req.params.token
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        // return res.status(422).jsonp(errors.array())
+        const alert = errors.array()
+        res.render('reset-password', {
+            alert
+        })
+        return
+    }
+    
+   const {password,password2}=req.body
+    const token=req.params.token
+  
     try {
       //const payload=jwt.verify(token,'secretkey')
       jwt.verify(token, 'secretkey', (err, payload) => {
@@ -1652,24 +1628,17 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
             if (err) {
               console.log("Error")
             } else {
-                res.send('password updated succesfully,Now login in Terv kids App')
+                res.render('show')
             }
           });
       })
-
-      
-
-      
-
-      
     } catch (error) {
-      
     }
-  
-
-
   })
 
-  
+  router.get("/show", async (req, res) => {
+
+    res.render('show')
+  })
 
 module.exports = router;
