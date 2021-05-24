@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const nodemailer=require('nodemailer')
 const Schedule = require('./Schema/ScheduleSchema');
 const Assesment = require('./Schema/AssesmentSchema')
+const NewAssesment=require('./Schema/NewAssesmentSchema')
 const Students = require('./Schema/StudentsSchema');
 const Gamelist = require('./Schema/GameSchema')
 const Teacher = require('./Schema/TeacherSchema');
@@ -13,6 +14,7 @@ const School = require('./Schema/SchoolSchema')
 const Reports = require('./Schema/ReportsSchema')
 const Educator=require('./Schema/educatorSchema');
 const Child=require('./Schema/NewStudentSchema');
+const Class=require('./Schema/NewClassSchema')
 const bodyParser = require('body-parser')
 const {verifyPasswordsMatch}=require('./views/validator')
 const { check, validationResult } = require('express-validator')
@@ -69,6 +71,10 @@ router.post('/educator/register', async (req, res) => {
     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Already Exist" })
   }
 
+  var EmailExist = await Educator.findOne({ eUserName:req.body.eUserName  , isVerify:status })
+  if (EmailExist) {
+    return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserName Already Exist" })
+  }
   const secretCode = randomstring.generate({
     length: 6,
     charset: 'numeric'
@@ -134,22 +140,40 @@ router.post('/otp-verification', async (req, res) => {
 
   const email=req.query.Email
   const otp=req.body.otp
-  
-  var EmailExist = await Educator.findOne({ Email:email })
-   const otp1=EmailExist.otp
-  if(otp==otp1){
-    
-    var update = await Educator.updateMany({ Email: email }, {
-      $set: {
-        isVerify:"Y"
+  var otp1;
+  var id;
+  var q =  Educator.find({Email:email }).sort({'_id':-1}).limit(1);
+    q.exec(function(err, posts) {
+     posts.forEach(function(item) {
+      console.log(item.otp);
+      otp1=item.otp
+      id=item.id
+      console.log(otp,otp1,id)
+      if(otp==otp1){
+        
+        Educator.findByIdAndUpdate(id, {
+          $set: {
+            isVerify:"Y"
+          }
+        },
+          { new: true },
+          function (err, user) {
+            if (err) {
+              console.log("Error")
+            } else {
+                
+            }
+          });
+        res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Account Verify" })
       }
-    })
-    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Account Verify" })
-  }
-  else{
-    res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Pls Check OTP "})
+      else{
+        res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Pls Check OTP "})
+    
+      }
+    });
+});
 
-  }
+ 
 
 })
 
@@ -217,6 +241,101 @@ router.post('/add/children', async (req, res) => {
     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Register Successfully", user: data })
 
 })
+
+router.post('/login/parent', async (req, res) => {
+
+  var ParentExist = await Educator.findOne({$or: [{Email: req.body.Email,isVerify:"Y"},{eUserName: req.body.Email,isVerify:"Y"}]})
+  
+  if(!ParentExist){
+
+    var StatusChk = await Educator.findOne({$or: [{Email: req.body.Email,isVerify:"N"},{eUserName: req.body.Email,isVerify:"N"}]})
+    if(StatusChk){
+      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Your Account is Not Verify" })
+    }
+  else{
+    return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "User Not Found" })
+  }
+  }
+  let results;
+  
+    if(ParentExist && ParentExist.ePassword==req.body.password){
+      const cursor=Child.find({EducatorEmail:ParentExist.Email},function  (err,result) {
+        results=result
+      var userToken = jwt.sign({ _id: ParentExist.id }, 'secretkey')
+        res.header('auth', userToken).json({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: ParentExist ,Student_List:results})
+      })
+    }
+    else{
+      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: " Password Not Correct" })
+    }
+  
+ 
+ 
+})
+
+const NewValidUser = (req, res, next) => {
+  var token = req.header('auth');
+
+  jwt.verify(token, 'secretkey', (err, payload) => {
+    if (err) {
+
+    }
+      //console.log(payload)
+    const id = payload
+    Educator.findById(id).then(data => {
+      req.user = data
+      //console.log(req.user)
+      next()
+    })
+  })
+}
+
+//children login
+router.post('/login/children', async (req, res) => {
+
+  var StudentExist = await Child.findOne( {studentUserName: req.body.name,studentPassword:req.body.password})
+
+ 
+  if (!StudentExist ) {
+    
+    return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId Not Exist" })
+  }
+ 
+  if (StudentExist) {
+    
+    var userToken = await jwt.sign({ _id: StudentExist.id }, 'secretkey')
+      res.header('auth', userToken).send({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: StudentExist })
+
+  }
+  else
+  {
+    return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Password Not Correct" })
+  }
+
+
+
+})
+
+
+const NewValidUser1 = (req, res, next) => {
+  var token = req.header('auth');
+
+  jwt.verify(token, 'secretkey', (err, payload) => {
+    if (err) {
+
+    }
+      //console.log(payload)
+    const id = payload
+    Child.findById(id).then(data => {
+      req.user = data
+      //console.log(req.user)
+      next()
+    })
+  })
+}
+
+
+
 
 //student register //no need
 router.post('/student/register', async (req, res) => {
@@ -326,6 +445,8 @@ const ValidUser = (req, res, next) => {
     })
   })
 }
+
+
 
 
 //teacher Update //no need
@@ -438,57 +559,57 @@ router.post("/scheduleclass/kg", ValidUser, async (req, res) => {
 
 //fetch schedule data
 
-router.get("/schedule/alldata", ValidUser, async (req, res) => {
-  const username = req.user.empid
-  Schedule.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
+// router.get("/schedule/alldata", NewValidUser, async (req, res) => {
+//   const username = req.user.Email
+//   Class.find({CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
 
 
-    if (result) {
-      for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-        var endtime = new Date();
-        await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
-        var CurrentTime = new Date()
+//     if (result) {
+//       for (var { id: id, CreatedTime: Ct, duration: d } of result) {
+//         var endtime = new Date();
+//         await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+//         var CurrentTime = new Date()
 
-        if (endtime.getTime() < CurrentTime.getTime()) {
-          isCompleted = "Y"
-        }
-        else {
-          isCompleted = "N"
-        }
-        if (isCompleted == "N") {
-          Rt = endtime.getTime() - CurrentTime.getTime()
-        } else {
-          Rt = 0
-        }
+//         if (endtime.getTime() < CurrentTime.getTime()) {
+//           isCompleted = "Y"
+//         }
+//         else {
+//           isCompleted = "N"
+//         }
+//         if (isCompleted == "N") {
+//           Rt = endtime.getTime() - CurrentTime.getTime()
+//         } else {
+//           Rt = 0
+//         }
 
-        await Schedule.findByIdAndUpdate(id, {
-          $set: {
-            isCompleted: isCompleted,
-            RemainingTime: Rt
-          }
-        }),
-          { new: true },
+//         await Schedule.findByIdAndUpdate(id, {
+//           $set: {
+//             isCompleted: isCompleted,
+//             RemainingTime: Rt
+//           }
+//         }),
+//           { new: true },
 
-          function (err, user) {
-            if (err) {
-              console.log("Error")
-            } else {
+//           function (err, user) {
+//             if (err) {
+//               console.log("Error")
+//             } else {
 
-            }
-          };
+//             }
+//           };
 
-      }
+//       }
 
-      const data = Schedule.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
-        res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
-      })
+//       const data = Schedule.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
+//         res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
+//       })
 
 
-    } else {
-      res.send(err);
-    }
-  });
-});
+//     } else {
+//       res.send(err);
+//     }
+//   });
+// });
 
 //Assesment 
 router.post("/assesment/kg", ValidUser, async (req, res) => {
@@ -1288,54 +1409,9 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   })
 
   //login parents
-  router.post('/login/parent', async (req, res) => {
+ 
 
-    var ParentExist = await Educator.findOne({Email:req.body.Email})
-
-   
-    
-    if(!ParentExist){
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email Not Found" })
-    }
-
-   
-    let results;
-    if(ParentExist.isVerify=="Y"){
-      if(ParentExist && ParentExist.ePassword==req.body.password){
-      
-        const cursor=Child.find({EducatorEmail:req.body.Email},function  (err,result) {
-          results=result
-        console.log(results)
-        var userToken = jwt.sign({ _id: ParentExist.id }, 'secretkey')
-          res.header('auth', userToken).json({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: ParentExist ,Student_List:results})
-        })
-      }
-      else{
-        return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: " Password Not Correct" })
-      }
-    }
-    else{
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Your Account is Not Verify" })
-    }
-   
-  })
-
-  const NewValidUser = (req, res, next) => {
-    var token = req.header('auth');
   
-    jwt.verify(token, 'secretkey', (err, payload) => {
-      if (err) {
-  
-      }
-        //console.log(payload)
-      const id = payload
-      Educator.findById(id).then(data => {
-        req.user = data
-        //console.log(req.user)
-        next()
-      })
-    })
-  }
 
   // router.post("/parent/update", NewValidUser, async (req, res) => {
   //   const email=req.user.Email
@@ -1441,31 +1517,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     });
   });
 
-//children login
-  router.post('/login/children', async (req, res) => {
 
-    var StudentExist = await Child.findOne( {studentUserName: req.body.name,studentPassword:req.body.password})
-
-   
-    if (!StudentExist ) {
-      
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId Not Exist" })
-    }
-   
-    if (StudentExist) {
-      
-      var userToken = await jwt.sign({ _id: StudentExist.id }, 'secretkey')
-        res.header('auth', userToken).send({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: StudentExist })
-
-    }
-    else
-    {
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Password Not Correct" })
-    }
-
-  
-
-  })
 // educator update
   router.post("/educator/update", NewValidUser, async (req, res) => {
     const Email=req.user.Email
@@ -1510,7 +1562,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     
     const email=req.body.Email
     
-    var EmailExist = await Educator.findOne({$or: [{'Email': email}, {'phoneNumber': email}]})
+    var EmailExist = await Educator.findOne({'Email': email })
 
     if (!EmailExist) {
       return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Not Exist" })
@@ -1520,20 +1572,14 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
   
       const id=EmailExist.id
       console.log(id)
-      let Email1
-     await Educator.findById(id,function (err,result) {
-        Email1=result.Email
-        console.log(result)
-      })
-    
-console.log(Email1)
+      
     var userToken = jwt.sign({_id:id}, 'secretkey',{expiresIn:'15m'})
     const link=`https://gamelogin2.herokuapp.com/api/reset-password/${userToken}`
 
     const output = `
     
     <h2>TERV KIDS |Reset Password</h2>
-    <h3>Hi ${Email1}</h3>
+    <h3>Hi ${email}</h3>
     <br></br>
     <h4>Forgot Password ? No Problem !</h4>
     <h4>Reset Your Password by clicking below link</h4>
@@ -1552,7 +1598,7 @@ console.log(Email1)
 
     var data={
       from:'rlogeshfive@gmail.com',
-      to:Email1,
+      to:email,
       subject:'Account Activiation Link',
       html:output
     }
@@ -1640,5 +1686,164 @@ console.log(Email1)
 
     res.render('show')
   })
+
+  //get children list
+  router.get("/getChildren",NewValidUser, async (req, res) => {
+  const email=req.user.Email
+    Child.find({EducatorEmail:email},function (err,results) {
+      res.send({ StatusCode: 200, StatusMessage: "Success", Response: " StudentsList", StudentsList: results });
+    })
+
+  })
+
+  //new class
+  router.post("/newscheduleclass/kg", NewValidUser, async (req, res) => {
+    var createTime = new Date();
+    var endtime = new Date();
+  
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+  
+    var time = new Date();
+  
+    today = dd + '-' + mm + '-' + yyyy + ',' + time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    console.log(today)
+  
+    endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
+    var CurrentTime = new Date()
+    if (endtime.getTime() < CurrentTime) {
+      isCompleted = "Y"
+    }
+    else {
+      isCompleted = "N"
+    }
+  
+    const noofstudents = req.body.studentsList.length
+    const schedule = new Class({
+      topicName: req.body.topicName,
+      subject: req.body.subject,
+      GameName: req.body.GameName,
+      //class: req.body.class,
+      duration: req.body.duration,
+      NoOfStudents: noofstudents,
+      studentsList: req.body.studentList,
+      CreatedTime: createTime,
+      endTime: endtime,
+      Date: today,
+      isCompleted: isCompleted,
+      RemainingTime: req.body.duration,
+      CreatedBy: req.user.Email,
+    })
+  
+    var data = await schedule.save();
+    console.log(data)
+    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Schedule Successfully", schedule: data })
+  
+  
+  })
+
+  router.get("/schedule/alldata", NewValidUser, async (req, res) => {
+    const username = req.user.Email
+    Class.find({CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
+  
+  
+      if (result) {
+        for (var { id: id, CreatedTime: Ct, duration: d } of result) {
+          var endtime = new Date();
+          await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+          var CurrentTime = new Date()
+  
+          if (endtime.getTime() < CurrentTime.getTime()) {
+            isCompleted = "Y"
+          }
+          else {
+            isCompleted = "N"
+          }
+          if (isCompleted == "N") {
+            Rt = endtime.getTime() - CurrentTime.getTime()
+          } else {
+            Rt = 0
+          }
+  
+          await Class.findByIdAndUpdate(id, {
+            $set: {
+              isCompleted: isCompleted,
+              RemainingTime: Rt
+            }
+          }),
+            { new: true },
+  
+            function (err, user) {
+              if (err) {
+                console.log("Error")
+              } else {
+  
+              }
+            };
+  
+        }
+  
+        const data = Class.find({ CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
+          res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
+        })
+  
+  
+      } else {
+        res.send(err);
+      }
+    });
+  });
+
+  router.post("/newassesment1/kg", NewValidUser, async (req, res) => {
+
+    var createTime = new Date();
+    var endtime = new Date();
+  
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+  
+    var time = new Date();
+  
+    today = dd + '-' + mm + '-' + yyyy + ',' + time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    console.log(today)
+  
+    endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
+    var CurrentTime = new Date()
+    if (endtime.getTime() < CurrentTime) {
+      isCompleted = "Y"
+    }
+    else {
+      isCompleted = "N"
+    }
+   
+    const noofstudents = req.body.studentsList.length
+  
+  
+    const assesment1 = new NewAssesment({
+      topicName: req.body.topicName,
+      subject: req.body.subject,
+      GameName: req.body.GameName,
+      duration: req.body.duration,
+      NoOfStudents: noofstudents,
+      studentsList: req.body.studentsList,
+      CreatedTime: createTime,
+      endTime: endtime,
+      Date: today,
+      isCompleted: isCompleted,
+      CreatedBy: req.user.Email,
+      RemainingTime: req.body.duration,
+  
+    })
+  
+    var data = await assesment1.save();
+    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Schedule Successfully", Assesment: data })
+  
+  })
+
+
 
 module.exports = router;
