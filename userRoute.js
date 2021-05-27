@@ -1451,15 +1451,24 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
 
 // educator update
   router.post("/educator/update", NewValidUser, async (req, res) => {
-    const Email=req.user.Email
-    var update = await Educator.updateMany({ Email: Email }, {
+    const id=req.user.id
+    Educator.findByIdAndUpdate(id, {
       $set: {
-       // Email:req.body.Email,
-        //Name:req.body.Name,
-       // eUserName:req.body.eUserName,
         ePassword:req.body.ePassword,
-        phoneNumber:req.body.phoneNumber,
+        phoneNumber:req.body.phoneNumber
       }
+    },
+      { new: true },
+      function (err, user) {
+        if (err) {
+          console.log("Error")
+        } else {
+            
+        }
+      });
+    var result = await Educator.findById(id, function (req, rest) {
+
+      return res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Updated !!!", User: rest })
     })
   })
 
