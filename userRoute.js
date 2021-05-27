@@ -293,7 +293,7 @@ const NewValidUser = (req, res, next) => {
 //children login
 router.post('/login/children', async (req, res) => {
 
-  var StudentExist = await Child.findOne( {studentUserName: req.body.name,studentPassword:req.body.password})
+  var StudentExist = await Child.findOne( {studentUserName: req.body.name})
 
  
   if (!StudentExist ) {
@@ -301,7 +301,7 @@ router.post('/login/children', async (req, res) => {
     return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId Not Exist" })
   }
  
-  if (StudentExist) {
+  if (StudentExist && StudentExist.studentPassword==req.body.password) {
     
     var userToken = await jwt.sign({ _id: StudentExist.id }, 'secretkey')
       res.header('auth', userToken).send({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: StudentExist })
