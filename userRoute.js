@@ -1493,7 +1493,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
     
     const email=req.body.Email
     
-    var EmailExist = await Educator.findOne({'Email': email })
+    var EmailExist = await Educator.findOne({'Email': email ,isVerify:"Y" })
 
     if (!EmailExist) {
       return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "Email ID Not Exist" })
