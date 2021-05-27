@@ -725,13 +725,6 @@ router.route("/gameselection").post(function (req, res) {
 })
 
 
-//delete student details
-router.route("/deleteStudents").delete(function (req, res) {
-  var id = req.query.id;
-  const data = Students.findByIdAndDelete(id, function (err, results) {
-    res.json(results)
-  })
-})
 
 
 //Get Student Class
@@ -866,10 +859,12 @@ router.get("/getStudentAssessment", ValidUser, async (req, res) => {
 });
 
 
-//student reports
-router.post("/studentwise/report", ValidUser, async (req, res) => {
-  const rollno1 = req.user.rollno
-  const cursor = Reports.find({ $and: [{ rollno: rollno1 }, { AssesmentId: req.body.AssesmentId }] }, (function (err, results) {
+//student reports updated 
+router.post("/studentwise/report", NewValidUser1, async (req, res) => {
+  const studentUserName1 = req.user.studentUserName
+  console.log(studentUserName1)
+  const cursor = Reports.find({ $and: [{ studentUserName: studentUserName1 }, { AssesmentId: req.query
+    .AssesmentId }] }, (function (err, results) {
     console.log(results)
     res.json(results)
   }));
@@ -877,7 +872,7 @@ router.post("/studentwise/report", ValidUser, async (req, res) => {
 
 
 //report for teachers
-router.post("/studentwise/report1", ValidUser, async (req, res) => {
+router.post("/educator/report", NewValidUser, async (req, res) => {
   var page = parseInt(req.query.page) || 0; //for next page pass 1 here
   var limit = parseInt(req.query.limit) || 0;
   if (limit == 0) {
@@ -907,7 +902,7 @@ router.post("/studentwise/report1", ValidUser, async (req, res) => {
     });
 })
 
-router.post("/teacherwise/report1", ValidUser, async (req, res) => {
+router.post("/teacherwise/report1", NewValidUser, async (req, res) => {
 
   const rollno1 = req.body.rollno
   const cursor = Reports.find({ $and: [{ rollno: rollno1 }, { AssesmentId: req.body.AssesmentId }] }, function (req, result) {
@@ -1180,16 +1175,17 @@ router.get("/student/progress", ValidUser, async (req, res) => {
 
 })
 
-// get studentgame from assesment  01 100%
-router.get("/student/gamename/report", ValidUser, async (req, res) => {
+// get studentgame from assesment  01 100% 
+// working
+router.get("/student/gamename/report", NewValidUser1, async (req, res) => {
 
-  const rollno=req.user.rollno
+  const studentUserName1=req.user.studentUserName
   //const studentUserName1=req.query.studentUserName
   const AssesmentId=req.query.AssesmentId
  
   var data1=[]
   var data=[]
-  const gamelist=Reports.find({$and:[{rollno:rollno}, {AssesmentId:AssesmentId}]},function (err,result) {
+  const gamelist=Reports.find({$and:[{studentUserName:studentUserName1}, {AssesmentId:AssesmentId}]},function (err,result) {
     
     
     result_list = []
@@ -1205,95 +1201,33 @@ router.get("/student/gamename/report", ValidUser, async (req, res) => {
   })
 
 })
+
 // get details report for student 02  100%
-router.get("/studentwise/report", ValidUser,async (req, res) => {
+//working
+router.get("/studentwise/report", NewValidUser1,async (req, res) => {
      
-  const rollno=req.user.rollno
+  const studentUserName1=req.user.studentUserName
   //const studentUserName1=req.query.studentUserName
   //const class1=req.user.class
   const AssesmentId=req.query.AssesmentId
-  const Subject=req.query.Subject
+  const Subject=req.query.GameName
 
-  const gamelist=Reports.find({$and:[{rollno:rollno }, {AssesmentId:AssesmentId},{GameName:Subject}]},function (err,result) {
+  const gamelist=Reports.find({$and:[{studentUserName:studentUserName1}, {AssesmentId:AssesmentId},{GameName:Subject}]},function (err,result) {
     
     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Report", Student_Report: result })
 
   })
 })
-
-// router.get("/getstudentlist/assesment", async (req, res) => {
-
-//   const AssesmentId1 = req.query.AssesmentId
-//   const arr = []
-//   // const studentlist=Reports.find({AssesmentId:AssesmentId1},function (err,result) {
-    
-//   //   console.log(result)
-//   //   result_list = []
-//   //   for(var i=0;i<result.length;i++){
-//   //     indivdual_obj = result[i]
-//   //     temp_obj= Object()
-//   //     temp_obj.name = indivdual_obj.name
-//   //     temp_obj.rollno =indivdual_obj.rollno
-//   //     result_list.push(temp_obj)
-//   //   }
-//   //   console.log(result_list)
-//   //   res.send(result_list)
-
-//   // })
-
-//   Reports.aggregate(
-//     [
-//       {
-//         $match: {
-//           AssesmentId: AssesmentId1
-//         }
-//       },
-//       {
-//         $group: {
-//           _id: {rollno:"$rollno",name:"$name"},
-
-          
-//         }
-//       },
-//       {
-//         $sort: { rollno: -1 }
-//       }
-     
-//     ],
-//     (e, d) => {
-//       if (!e) {
-
-//         console.log(d)
-//         var arrayOfStrings = d.map(function (obj) {
-//           arr.push(obj._id)
-//           console.log(arr)
-//         });
-//         res.json(arr)
-//       }
-//       //  const cursor = Reports.find({rollno:d},function(err,result){
-//       //   var arrayOfStrings = result.map(function(obj) {
-//       //     arr1.push(obj.name)
-//       //     console.log(arr1)            
-//       //   });
-
-//       //  })
-
-
-
-//       else {
-//         console.log(e)
-//       }
-//     })
-
-//   })
+        
 
 //tab 1 teacher report getStudentlist from assesment
-router.get("/assesment/studentlist",ValidUser,async (req, res) => {
+// working
+router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
      
   //const rollno=req.query.rollno
   const AssesmentId=req.query.AssesmentId
-  Assesment.findById(AssesmentId ,  function (err, result) {
-    res.json({StatusCode: 200, StatusMessage: "Success", Students_List: result.studentRollNoList})
+  NewAssesment.findById(AssesmentId ,  function (err, result) {
+    res.json({StatusCode: 200, StatusMessage: "Success", Students_List: result.studentsList})
   })
 })
   
@@ -1301,15 +1235,13 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 //tab1 get student gamelist by teacher
   router.get("/gamename1/report", async (req, res) => {
 
-    const rollno=req.query.rollno
+    const studentUserName1=req.query.studentUserName
    // const class1=req.query.class
     const AssesmentId=req.query.AssesmentId
     //console.log(AssesmentId,class1,rollno)
     var data1=[]
     var data=[]
-    const gamelist=Reports.find({$and:[{rollno:rollno }, {AssesmentId:AssesmentId}]},function (err,result) {
-      
-     
+    const gamelist=Reports.find({$and:[{studentUserName:studentUserName1 }, {AssesmentId:AssesmentId}]},function (err,result) {
       result_list = []
       for(var i=0;i<result.length;i++){
         indivdual_obj = result[i]
@@ -1327,13 +1259,12 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
 
 //tab1 get assesmentwise report by teacher
   router.get("/studentwise1/report", ValidUser,async (req, res) => {
-     
-    const rollno=req.query.rollno
-    const class1=req.query.class
+    
+    const studentUserName1=req.query.studentUserName
     const AssesmentId=req.query.AssesmentId
-    const Subject=req.query.Subject
+    const Subject=req.query.GameName
   
-    const gamelist=Reports.find({$and:[{rollno:rollno }, {AssesmentId:AssesmentId},{GameName:Subject}]},function (err,result) {
+    const gamelist=Reports.find({$and:[{studentUserName:studentUserName1 }, {AssesmentId:AssesmentId},{GameName:Subject}]},function (err,result) {
   
       res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Report", Student_Report: result })
   
@@ -1524,8 +1455,8 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     var update = await Educator.updateMany({ Email: Email }, {
       $set: {
        // Email:req.body.Email,
-        Name:req.body.Name,
-        eUserName:req.body.eUserName,
+        //Name:req.body.Name,
+       // eUserName:req.body.eUserName,
         ePassword:req.body.ePassword,
         phoneNumber:req.body.phoneNumber,
       }
@@ -1608,7 +1539,7 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
          console.log(err)
        }
        else{
-         res.json({Success:'Mail send successfully',Token:userToken})
+        res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Mail Send Successfully" })
        }
     })
   })
@@ -1843,6 +1774,135 @@ router.get("/assesment/studentlist",ValidUser,async (req, res) => {
     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Schedule Successfully", Assesment: data })
   
   })
+
+  router.get("/getStudentClass2", NewValidUser1, async (req, res) => {
+    const username = req.user.studentUserName
+    Class.find({studentsList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
+  
+      if (result) {
+        for (var { id: id, CreatedTime: Ct, duration: d } of result) {
+          console.log(result)
+          var endtime = new Date();
+          await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+          var CurrentTime = new Date()
+  
+          if (endtime.getTime() < CurrentTime.getTime()) {
+            isCompleted = "Y"
+          }
+          else {
+            isCompleted = "N"
+          }
+          if (isCompleted == "N") {
+            Rt = endtime.getTime() - CurrentTime.getTime()
+          } else {
+            Rt = 0
+          }
+  
+          await Class.findByIdAndUpdate(id, {
+            $set: {
+              isCompleted: isCompleted,
+              RemainingTime: Rt
+            }
+          }),
+            { new: true },
+  
+            function (err, user) {
+              if (err) {
+                console.log("Error")
+              } else {
+              }
+            };
+        }
+       
+  
+        const gamelist=Class.find({ studentsList: username }, {}, { sort: { 'CreatedTime': -1 } },function (err,result) {
+          result_list = []
+          for(var i=0;i<result.length;i++){
+            indivdual_obj = result[i]
+            temp_obj= Object()
+            temp_obj.id =indivdual_obj.id
+            temp_obj.topicname = indivdual_obj.topicName
+            temp_obj.subject =indivdual_obj.subject
+            temp_obj.Date =indivdual_obj.Date
+            temp_obj.Duration=indivdual_obj.duration
+            temp_obj.isCompleted=indivdual_obj.isCompleted
+            result_list.push(temp_obj)
+          }
+          console.log(result_list)
+          res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result_list})
+      
+        })
+  
+      } else {
+        res.send(err);
+      }
+    });
+  });
+
+  router.get("/getStudentassesment2", NewValidUser1, async (req, res) => {
+    const username = req.user.studentUserName
+    NewAssesment.find({studentsList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
+  
+      if (result) {
+        for (var { id: id, CreatedTime: Ct, duration: d } of result) {
+          console.log(result)
+          var endtime = new Date();
+          await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
+          var CurrentTime = new Date()
+  
+          if (endtime.getTime() < CurrentTime.getTime()) {
+            isCompleted = "Y"
+          }
+          else {
+            isCompleted = "N"
+          }
+          if (isCompleted == "N") {
+            Rt = endtime.getTime() - CurrentTime.getTime()
+          } else {
+            Rt = 0
+          }
+  
+          await NewAssesment.findByIdAndUpdate(id, {
+            $set: {
+              isCompleted: isCompleted,
+              RemainingTime: Rt
+            }
+          }),
+            { new: true },
+  
+            function (err, user) {
+              if (err) {
+                console.log("Error")
+              } else {
+              }
+            };
+        }
+       
+  
+        const gamelist=NewAssesment.find({ studentsList: username }, {}, { sort: { 'CreatedTime': -1 } },function (err,result) {
+          result_list = []
+          for(var i=0;i<result.length;i++){
+            indivdual_obj = result[i]
+            temp_obj= Object()
+            temp_obj.id =indivdual_obj.id
+            temp_obj.topicname = indivdual_obj.topicName
+            temp_obj.subject =indivdual_obj.subject
+            temp_obj.Date =indivdual_obj.Date
+            temp_obj.Duration=indivdual_obj.duration
+            temp_obj.isCompleted=indivdual_obj.isCompleted
+            result_list.push(temp_obj)
+          }
+          console.log(result_list)
+          res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result_list})
+      
+        })
+  
+      } else {
+        res.send(err);
+      }
+    });
+  });
+
 
 
 

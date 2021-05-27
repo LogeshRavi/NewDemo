@@ -64,8 +64,6 @@ for (var j = 0; j <sub_array.length; j++){
 
    const  data= await new Reports({
          name:req.body.name,
-         class:req.body.class,
-         rollno:req.body.rollno,
          AssesmentId:req.body.AssesmentId,
          studentUserName:req.body.studentUserName,
        //  topicName:req.body.topicName,
