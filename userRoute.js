@@ -268,9 +268,6 @@ router.post('/login/parent', async (req, res) => {
     else{
       return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: " Password Not Correct" })
     }
-  
- 
- 
 })
 
 const NewValidUser = (req, res, next) => {
@@ -506,7 +503,7 @@ router.post("/student/update", ValidUser, async (req, res) => {
 
 
 //new class schedule
-router.post("/scheduleclass/kg", ValidUser, async (req, res) => {
+router.post("/scheduleclassdummy/kg", ValidUser, async (req, res) => {
 
 
   var createTime = new Date();
@@ -1637,7 +1634,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   })
 
   //new class
-  router.post("/newscheduleclass/kg", NewValidUser, async (req, res) => {
+  router.post("/scheduleclass/kg", NewValidUser, async (req, res) => {
     var createTime = new Date();
     var endtime = new Date();
   

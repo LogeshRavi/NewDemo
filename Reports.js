@@ -45,7 +45,7 @@ router.post("/create/report",async(req,res)=>{
 
 sub_array = req.body.Sub
 
-console.log(sub_array)
+
 for (var j = 0; j <sub_array.length; j++){
 
   var  obj={
