@@ -609,7 +609,7 @@ router.post("/scheduleclassdummy/kg", ValidUser, async (req, res) => {
 // });
 
 //Assesment 
-router.post("/assesment/kg", ValidUser, async (req, res) => {
+router.post("/assesmentdummy/kg", ValidUser, async (req, res) => {
   var createTime = new Date();
   var endtime = new Date();
 
@@ -661,8 +661,8 @@ router.post("/assesment/kg", ValidUser, async (req, res) => {
 //get assesment data
 //router.route("/assesment/alldata").get(function(req, res) {
 router.get("/assesment/alldata", ValidUser, async (req, res) => {
-  const username = req.user.empid
-  Assesment.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
+  const username = req.user.Email
+  NewAssesment.find({ CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
     if (result) {
       for (var { id: id, CreatedTime: Ct, duration: d } of result) {
         var endtime = new Date();
@@ -683,7 +683,7 @@ router.get("/assesment/alldata", ValidUser, async (req, res) => {
         } else {
           Rt = 0
         }
-        await Assesment.findByIdAndUpdate(id, {
+        await NewAssesment.findByIdAndUpdate(id, {
           $set: {
             isCompleted: isCompleted,
             RemainingTime: Rt
@@ -698,7 +698,7 @@ router.get("/assesment/alldata", ValidUser, async (req, res) => {
             }
           });
       }
-      const data = Assesment.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
+      const data = NewAssesment.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
         res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Assesment: results });
       })
     } else {
@@ -1633,7 +1633,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
 
   })
 
-  //new class
+  //new create class api
   router.post("/scheduleclass/kg", NewValidUser, async (req, res) => {
     var createTime = new Date();
     var endtime = new Date();
@@ -1681,6 +1681,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   
   })
 
+  // get create class by educator
   router.get("/schedule/alldata", NewValidUser, async (req, res) => {
     const username = req.user.Email
     Class.find({CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
@@ -1733,7 +1734,8 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
     });
   });
 
-  router.post("/newassesment1/kg", NewValidUser, async (req, res) => {
+  //new create assesment api
+  router.post("/assesment/kg", NewValidUser, async (req, res) => {
 
     var createTime = new Date();
     var endtime = new Date();
@@ -1780,6 +1782,10 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
     res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Schedule Successfully", Assesment: data })
   
   })
+
+
+
+
 
   router.get("/getStudentClass2", NewValidUser1, async (req, res) => {
     const username = req.user.studentUserName
