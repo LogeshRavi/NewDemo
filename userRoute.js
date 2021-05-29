@@ -752,7 +752,7 @@ router.get("/getTeacherClass", ValidUser, async (req, res) => {
 })
 
 
-router.get("/getStudentClass", ValidUser, async (req, res) => {
+router.get("/getStudentClassdummy", ValidUser, async (req, res) => {
   const username = req.user.rollno
   console.log(username)
   Schedule.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
@@ -805,7 +805,7 @@ router.get("/getStudentClass", ValidUser, async (req, res) => {
 });
 
 
-router.get("/getStudentAssessment", ValidUser, async (req, res) => {
+router.get("/getStudentAssessmentdummy", ValidUser, async (req, res) => {
   const username = req.user.rollno
   console.log(username)
   Assesment.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
@@ -1784,10 +1784,8 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   })
 
 
-
-
-
-  router.get("/getStudentClass2", NewValidUser1, async (req, res) => {
+//get class by student
+  router.get("/getStudentClass", NewValidUser1, async (req, res) => {
     const username = req.user.studentUserName
     Class.find({studentsList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
   
@@ -1851,7 +1849,8 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
     });
   });
 
-  router.get("/getStudentassesment2", NewValidUser1, async (req, res) => {
+  //get assesment by student
+  router.get("/getStudentAssessment", NewValidUser1, async (req, res) => {
     const username = req.user.studentUserName
     NewAssesment.find({studentsList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
   
