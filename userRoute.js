@@ -1665,7 +1665,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
       //class: req.body.class,
       duration: req.body.duration,
       NoOfStudents: noofstudents,
-      studentsList: req.body.studentList,
+      studentsList: req.body.studentsList,
       CreatedTime: createTime,
       endTime: endtime,
       Date: today,
