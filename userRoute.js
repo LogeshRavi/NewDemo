@@ -1033,7 +1033,7 @@ for (var j = 0; j <sub_array.length; j++){
 
 // get studentgame from assesment  01 100% 
 // working
-router.get("/student/gamename/report", NewValidUser1, async (req, res) => {
+router.get("/student/gamename", NewValidUser1, async (req, res) => {
 
   const studentUserName1=req.user.studentUserName
   //const studentUserName1=req.query.studentUserName
