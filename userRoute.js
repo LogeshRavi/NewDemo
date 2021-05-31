@@ -502,7 +502,7 @@ router.post("/student/update", ValidUser, async (req, res) => {
 })
 
 
-//new class schedule
+//new class schedule //no need
 router.post("/scheduleclassdummy/kg", ValidUser, async (req, res) => {
 
 
@@ -554,61 +554,7 @@ router.post("/scheduleclassdummy/kg", ValidUser, async (req, res) => {
 })
 
 
-//fetch schedule data
-
-// router.get("/schedule/alldata", NewValidUser, async (req, res) => {
-//   const username = req.user.Email
-//   Class.find({CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
-
-
-//     if (result) {
-//       for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-//         var endtime = new Date();
-//         await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
-//         var CurrentTime = new Date()
-
-//         if (endtime.getTime() < CurrentTime.getTime()) {
-//           isCompleted = "Y"
-//         }
-//         else {
-//           isCompleted = "N"
-//         }
-//         if (isCompleted == "N") {
-//           Rt = endtime.getTime() - CurrentTime.getTime()
-//         } else {
-//           Rt = 0
-//         }
-
-//         await Schedule.findByIdAndUpdate(id, {
-//           $set: {
-//             isCompleted: isCompleted,
-//             RemainingTime: Rt
-//           }
-//         }),
-//           { new: true },
-
-//           function (err, user) {
-//             if (err) {
-//               console.log("Error")
-//             } else {
-
-//             }
-//           };
-
-//       }
-
-//       const data = Schedule.find({ empid: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
-//         res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
-//       })
-
-
-//     } else {
-//       res.send(err);
-//     }
-//   });
-// });
-
-//Assesment 
+//Assesment  //no need
 router.post("/assesmentdummy/kg", ValidUser, async (req, res) => {
   var createTime = new Date();
   var endtime = new Date();
@@ -658,8 +604,7 @@ router.post("/assesmentdummy/kg", ValidUser, async (req, res) => {
 
 })
 
-//get assesment data
-//router.route("/assesment/alldata").get(function(req, res) {
+//get assesment data 
 router.get("/assesment/alldata", NewValidUser, async (req, res) => {
   const username = req.user.Email
   NewAssesment.find({ CreatedBy: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
@@ -707,14 +652,8 @@ router.get("/assesment/alldata", NewValidUser, async (req, res) => {
   });
 });
 
-//get student name
-router.route("/classstudent").post(function (req, res) {
-  const cursor = Students.find({ "class": req.body.class ,"schoolName":req.body.schoolName}, (function (err, results) {
-    res.json(results)
-  }));
-})
 
-//GET GAME
+//GET GAME 
 router.route("/gameselection").post(function (req, res) {
   const cursor = Gamelist.find({ subjectName: req.body.subjectName }, (function (err, results) {
     res.json(results)
@@ -722,138 +661,6 @@ router.route("/gameselection").post(function (req, res) {
 })
 
 
-
-
-//Get Student Class
-router.get("/getStudentClass1", ValidUser, async (req, res) => {
-  const user = req.user.rollno
-  console.log(user)
-  const Class = Schedule.find({ studentRollNoList: user }, function (req, results) {
-    console.log(results)
-    res.json(results)
-  }
-  )
-})
-
-//get Student Class
-router.get("/getStudentAssessment1", ValidUser, async (req, res) => {
-  const user = req.user.rollno
-  console.log(user)
-  const Class = Assesment.find({ studentRollNoList: user }, function (req, results) {
-    console.log(results)
-    res.json(results)
-  }
-  )
-})
-
-router.get("/getTeacherClass", ValidUser, async (req, res) => {
-  const ClassName = req.user.class
-  res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Schedule Successfully", ClassName: ClassName })
-})
-
-
-router.get("/getStudentClassdummy", ValidUser, async (req, res) => {
-  const username = req.user.rollno
-  console.log(username)
-  Schedule.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
-    console.log(result)
-
-    if (result) {
-      for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-        var endtime = new Date();
-        await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
-        var CurrentTime = new Date()
-
-        if (endtime.getTime() < CurrentTime.getTime()) {
-          isCompleted = "Y"
-        }
-        else {
-          isCompleted = "N"
-        }
-        if (isCompleted == "N") {
-          Rt = endtime.getTime() - CurrentTime.getTime()
-        } else {
-          Rt = 0
-        }
-
-        await Schedule.findByIdAndUpdate(id, {
-          $set: {
-            isCompleted: isCompleted,
-            RemainingTime: Rt / 60000
-          }
-        }),
-          { new: true },
-
-          function (err, user) {
-            if (err) {
-              console.log("Error")
-            } else {
-
-            }
-          };
-
-      }
-      const data = Schedule.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
-        res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
-      })
-
-
-    } else {
-      res.send(err);
-    }
-  });
-});
-
-
-router.get("/getStudentAssessmentdummy", ValidUser, async (req, res) => {
-  const username = req.user.rollno
-  console.log(username)
-  Assesment.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
-    console.log(result)
-
-    if (result) {
-      for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-        var endtime = new Date();
-        await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
-
-        var CurrentTime = new Date()
-
-        if (endtime.getTime() < CurrentTime.getTime()) {
-          isCompleted = "Y"
-        }
-        else {
-          isCompleted = "N"
-        }
-        if (isCompleted == "N") {
-          Rt = endtime.getTime() - CurrentTime.getTime()
-        } else {
-          Rt = 0
-        }
-
-        await Assesment.findByIdAndUpdate(id, {
-          $set: {
-            isCompleted: isCompleted,
-            RemainingTime: Rt
-          }
-        }),
-          { new: true },
-
-          function (err, user) {
-            if (err) {
-              console.log("Error")
-            } else {
-            }
-          };
-      }
-      const data = Assesment.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
-        res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
-      })
-
-    } else {
-      res.send(err);
-    }
-  });
-});
 
 
 //student reports updated 
@@ -1172,6 +979,58 @@ router.get("/student/progress", ValidUser, async (req, res) => {
 
 })
 
+
+router.post("/create/report",NewValidUser1,async(req,res)=>{
+   
+  const result=req.body.Sub[0].Result
+  var total=0
+  for (var j = 0; j <3; j++){
+   var bool=await req.body.Sub[j].Result
+   if(bool=='True'){
+       total=total+1
+   }
+ 
+   }
+   var data4=[]
+
+   sub_array = req.body.Sub
+
+
+for (var j = 0; j <sub_array.length; j++){
+
+ var  obj={
+
+       
+       Question:req.body.Sub[j].Question,
+       CrtAns:req.body.Sub[j].CrtAns,
+       UserAns:req.body.Sub[j].UserAns,
+       Result:req.body.Sub[j].Result
+   }
+   data4[j]=obj
+
+}
+
+
+  const  data= await new Reports({
+        name:req.user.StudentName,
+        AssesmentId:req.body.AssesmentId,
+        studentUserName:req.user.studentUserName,
+        GameName:req.body.GameName,
+       Sub:
+           data4
+       ,
+
+
+           Total:total
+       
+   }) 
+   var data1= await data.save();
+
+   res.json({StatusCode:200,StatusMessage:"Success",Response:"Report Add Successfully",schedule:data1})
+
+})
+
+
 // get studentgame from assesment  01 100% 
 // working
 router.get("/student/gamename/report", NewValidUser1, async (req, res) => {
@@ -1294,156 +1153,9 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
 
     })
   })
-//res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result})
-  //get gamelist
-  // router.get("/gamelist3/report",async (req, res) => {
-     
-  //   const rollno=req.query.rollno
-  //   const AssesmentId=req.query.AssesmentId
-  //   Assesment.findById(AssesmentId ,  function (err, result) {
-  //   res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result.GameName})
-    
-  // })
-
-  
-
-  //new student login
-  router.post('/login1', async (req, res) => {
-   
-    var StudentExist = await Educator.findOne({studentUserName: req.body.name,studentPassword:req.body.password})
-    
-    
-   
-    if (!StudentExist ) {
-      
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId or Password Not Correct" })
-    }
-   
 
 
-    if (StudentExist) {
 
-      
-      
-      var userToken = await jwt.sign({ _id: StudentExist.id }, 'secretkey')
-        res.header('auth', userToken).send({ StatusCode: 200, StatusMessage: "Success", Response: "Login Successfully", token: userToken, user: StudentExist })
-
-    }
-    else
-    {
-      return res.json({ StatusCode: 400, StatusMessage: "Failure", Response: "UserId or Password Not Correct" })
-    }
-
-  })
-
-  //login parents
- 
-
-  
-
-  // router.post("/parent/update", NewValidUser, async (req, res) => {
-  //   const email=req.user.Email
-  //   console.log(email)
-  // })
-
-  router.post("/newassesment/kg", NewValidUser, async (req, res) => {
-    var createTime = new Date();
-    var endtime = new Date();
-  
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-  
-    var time = new Date();
-  
-    today = dd + '-' + mm + '-' + yyyy + ',' + time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-    console.log(today)
-  
-    endtime.setTime(createTime.getTime() + (req.body.duration * 60 * 1000));
-    var CurrentTime = new Date()
-    if (endtime.getTime() < CurrentTime) {
-      isCompleted = "Y"
-    }
-    else {
-      isCompleted = "N"
-    }
-  
-    const noofstudents = req.body.studentRollNoList.length
-  
-  
-    const assesment = new Assesment({
-      topicName: req.body.topicName,
-      subject: req.body.subject,
-      GameName: req.body.GameName,
-      class: req.body.class,
-      duration: req.body.duration,
-      NoOfStudents: noofstudents,
-      studentRollNoList: req.body.studentRollNoList,
-      CreatedTime: createTime,
-      endTime: endtime,
-      Date: today,
-      isCompleted: isCompleted,
-      CreatedBy: req.user.name,
-      empid: req.user.empid,
-      RemainingTime: req.body.duration,
-  
-    })
-  
-    var data = await assesment.save();
-    res.json({ StatusCode: 200, StatusMessage: "Success", Response: "Schedule Successfully", Assesment: data })
-  
-  })
-
-  router.get("/getStudentAssessment2", NewValidUser, async (req, res) => {
-    const username = req.user.AddStudent[0].studentUserName
-    //console.log(username)
-    Assesment.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, async function (err, result) {
-      //console.log(result)
-  
-      if (result) {
-        for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-          var endtime = new Date();
-          await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
-  
-          var CurrentTime = new Date()
-  
-          if (endtime.getTime() < CurrentTime.getTime()) {
-            isCompleted = "Y"
-          }
-          else {
-            isCompleted = "N"
-          }
-          if (isCompleted == "N") {
-            Rt = endtime.getTime() - CurrentTime.getTime()
-          } else {
-            Rt = 0
-          }
-  
-          await Assesment.findByIdAndUpdate(id, {
-            $set: {
-              isCompleted: isCompleted,
-              RemainingTime: Rt
-            }
-          }),
-            { new: true },
-  
-            function (err, user) {
-              if (err) {
-                console.log("Error")
-              } else {
-              }
-            };
-        }
-        const data = Assesment.find({ studentRollNoList: username }, {}, { sort: { 'CreatedTime': -1 } }, function (req, results) {
-          res.send({ StatusCode: 200, StatusMessage: "Success", Schedule_Class: results });
-        })
-  
-      } else {
-        res.send(err);
-      }
-    });
-  });
 
 
 // educator update
@@ -1791,7 +1503,6 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   
       if (result) {
         for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-          console.log(result)
           var endtime = new Date();
           await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
           var CurrentTime = new Date()
@@ -1838,7 +1549,6 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
             temp_obj.isCompleted=indivdual_obj.isCompleted
             result_list.push(temp_obj)
           }
-          console.log(result_list)
           res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result_list})
       
         })
@@ -1856,7 +1566,6 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   
       if (result) {
         for (var { id: id, CreatedTime: Ct, duration: d } of result) {
-          console.log(result)
           var endtime = new Date();
           await endtime.setTime(Ct.getTime() + (d * 60 * 1000));
           var CurrentTime = new Date()
@@ -1903,7 +1612,6 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
             temp_obj.isCompleted=indivdual_obj.isCompleted
             result_list.push(temp_obj)
           }
-          console.log(result_list)
           res.json({StatusCode: 200, StatusMessage: "Success", Schedule_Class: result_list})
       
         })

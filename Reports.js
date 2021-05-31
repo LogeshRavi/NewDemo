@@ -6,7 +6,7 @@ const Students=require('./Schema/StudentsSchema');
 const Gamelist=require('./Schema/GameSchema')
 const Teacher=require('./Schema/TeacherSchema')
 //const Dummy=require('./Schema/dummySchema')
-const Reports=require('./Schema/ReportsSchema')
+
 
 
 
@@ -19,31 +19,15 @@ router.post("/create/report",async(req,res)=>{
     
    var total=0
    for (var j = 0; j <3; j++){
-    //console.log(j)
-  //  console.log(req.body.Sub[j].Result);
     var bool=await req.body.Sub[j].Result
     if(bool=='True'){
-      //  console.log(total)
         total=total+1
     }
   
     }
-
-// var Total1=0;
-//     console.log(result1)
-    // for (var val of Result[0]){
-    //     console.log(val)
-    
-//     if(val=='True'){
-//         Total1=Total1+1
-//         console.log(Total1)
-//     }
-//     }
-
-//const data;
     var data4=[]
 
-sub_array = req.body.Sub
+    sub_array = req.body.Sub
 
 
 for (var j = 0; j <sub_array.length; j++){
@@ -59,7 +43,6 @@ for (var j = 0; j <sub_array.length; j++){
     data4[j]=obj
 
 }
-//console.log(data4)
 
 
    const  data= await new Reports({
@@ -75,30 +58,13 @@ for (var j = 0; j <sub_array.length; j++){
 
             Total:total
         
-    })
-  //  console.log(data)
-
-    
-
- 
-    
+    }) 
     var data1= await data.save();
 
     res.json({StatusCode:200,StatusMessage:"Success",Response:"Report Add Successfully",schedule:data1})
 
 })
 
-
-// router.post("/classwise/report",async(req,res)=>{
-
-//     const cursor = Dummy.find({$and:[{Rollno:req.body.Rollno }, {ClassId:req.body.ClassId}]},(function(err, results){   
-//         console.log(results) 
-//         res.json(results)
-//  }) );
-
-
-
-// })
 
 
 module.exports=router;
