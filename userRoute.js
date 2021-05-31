@@ -1114,7 +1114,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   })
 
 //tab1 get assesmentwise report by teacher
-  router.get("/studentwise1/report", ValidUser,async (req, res) => {
+  router.get("/getdetailreport", ValidUser,async (req, res) => {
     
     const studentUserName1=req.query.studentUserName
     const AssesmentId=req.query.AssesmentId
