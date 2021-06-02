@@ -1094,7 +1094,7 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
       })
     }
     console.log(result_list)
-    res.json({StatusCode: 200, StatusMessage: "Success", Students_List: result_list})
+    res.json({StatusCode: 200, StatusMessage: "Success",Response: "Students List", Students_List: result_list})
     
   })
 })
