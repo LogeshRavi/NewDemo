@@ -1078,9 +1078,24 @@ router.get("/studentwise/report", NewValidUser1,async (req, res) => {
 router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
      
   //const rollno=req.query.rollno
+  var arr;
   const AssesmentId=req.query.AssesmentId
-  NewAssesment.findById(AssesmentId ,  function (err, result) {
-    res.json({StatusCode: 200, StatusMessage: "Success", Students_List: result.studentsList})
+ 
+  NewAssesment.findById(AssesmentId , async  function (err, result) {
+
+    
+    const sl=result.studentsList
+     let result_list = []
+    for(var i=0;i<sl.length;i++){
+      console.log(sl[i])
+    var cursor= await Child.findOne({studentUserName:sl[i]},function (err,value) {
+        //console.log(value.StudentName)
+        result_list.push(value.StudentName)
+      })
+    }
+    console.log(result_list)
+    res.json({StatusCode: 200, StatusMessage: "Success", Students_List: result_list})
+    
   })
 })
   
