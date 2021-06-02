@@ -983,18 +983,15 @@ router.get("/student/progress", ValidUser, async (req, res) => {
 router.post("/create/report",NewValidUser1,async(req,res)=>{
    
   const result=req.body.Sub[0].Result
+  sub_array = req.body.Sub
   var total=0
-  for (var j = 0; j <3; j++){
+  for (var j = 0; j <sub_array.length; j++){
    var bool=await req.body.Sub[j].Result
    if(bool=='True'){
        total=total+1
    }
- 
    }
    var data4=[]
-
-   sub_array = req.body.Sub
-
 
 for (var j = 0; j <sub_array.length; j++){
 
@@ -1153,9 +1150,6 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
 
     })
   })
-
-
-
 
 
 // educator update
