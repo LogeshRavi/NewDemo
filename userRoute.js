@@ -1209,8 +1209,13 @@ router.get("/assesment/studentlist",NewValidUser,async (req, res) => {
   // Delete Children
   router.route("/deletechildren").delete(function (req, res) {
     const studentUserName1=req.query.studentUserName
-    const data = Child.findOneAndDelete({studentUserName:studentUserName1}, function (err, results) {
-      res.send({ StatusCode: 200, StatusMessage: "Success", Response: "Delete Student Record", StudentDeatils: results });
+    const data = Child.findOneAndDelete({studentUserName:studentUserName1}, function (err, results1) {
+
+      const data1=Reports.deleteMany({studentUserName:studentUserName1}, function (err, results){
+        //res.send({ StatusCode: 200, StatusMessage: "Success", Response: "Delete Student Record", StudentDeatils: results });
+      })
+
+      res.send({ StatusCode: 200, StatusMessage: "Success", Response: "Delete Student Record", StudentDeatils: results1 });
   
     })
   })
