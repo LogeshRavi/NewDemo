@@ -22,7 +22,7 @@ app.use('/api',userRouter);
 app.use('/api',Reports);
 app.use('/api',Schools)
 
-mongoose.connect('go db link',
+mongoose.connect('your db link',
                  {useNewUrlParser: true,
                      useUnifiedTopology: true});
 
