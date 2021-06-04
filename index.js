@@ -22,7 +22,7 @@ app.use('/api',userRouter);
 app.use('/api',Reports);
 app.use('/api',Schools)
 
-mongoose.connect('mongodb+srv://demo:E8wxFGqeJz0VkKWm@cluster0.jrdfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect('go db link',
                  {useNewUrlParser: true,
                      useUnifiedTopology: true});
 
